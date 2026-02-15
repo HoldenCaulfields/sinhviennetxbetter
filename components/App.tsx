@@ -20,12 +20,12 @@ export default function App() {
     discoveryMode, setDiscoveryMode,
     isReviewModalOpen, setIsReviewModalOpen,
     isEditProfileOpen, setIsEditProfileOpen,
-    centerTrigger,
+    centerTrigger, activeFilter, setActiveFilter,
     myProfile, setMyProfile,
     activeCategory, setActiveCategory,
     selectedUser, setSelectedUser,
     personaScore,
-    firestoreUsers,
+    firestoreUsers, filteredUsers,
     handleToggleOption, handleAddCustomTag, handleRemoveCustomTag, handleUpdateProfile,
     handleOpenReview, handleConfirmSave, handleRecenter, handleResetDraft, handleUpdateAvatar,
   } = useAppState();
@@ -37,7 +37,7 @@ export default function App() {
       <MapLayer 
         myProfile={myProfile}
         personaScore={personaScore}
-        firestoreUsers={firestoreUsers}
+        firestoreUsers={firestoreUsers} filteredUsers={filteredUsers}
         discoveryMode={discoveryMode}
         centerTrigger={centerTrigger}
         onUserClick={setSelectedUser}
@@ -65,6 +65,8 @@ export default function App() {
         handleRecenter={handleRecenter}
         handleResetDraft={handleResetDraft}
         setSelectedUser={setSelectedUser}
+        activeFilter={activeFilter}
+        setActiveFilter={setActiveFilter}
       />
 
       {/* Standalone Modals (outside UI hierarchy to prevent stacking context issues) */}

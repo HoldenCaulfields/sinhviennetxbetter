@@ -68,7 +68,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ profile, onSave, on
         exit={{ y: "100%", opacity: 0 }}
         transition={{ type: "spring", damping: 28, stiffness: 250 }}
         // QUAN TRỌNG: h-auto cho desktop, h-[92vh] cho mobile
-        className="relative w-full h-[92vh] sm:h-auto sm:max-h-[85vh] sm:max-w-lg bg-white rounded-t-[2.5rem] sm:rounded-[3rem] shadow-2xl flex flex-col overflow-hidden"
+        className="relative w-full h-[92dvh] sm:h-auto sm:max-h-[85dvh] sm:max-w-lg bg-white rounded-t-[2.5rem] sm:rounded-[3rem] shadow-2xl flex flex-col overflow-hidden"
       >
         {/* Mobile Handle */}
         <div className="h-1.5 w-10 bg-slate-200 rounded-full mx-auto mt-3 shrink-0 sm:hidden" />

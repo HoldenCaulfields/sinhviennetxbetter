@@ -1,34 +1,73 @@
 
-const SAMPLE_FILTERS = [
-  { id: 1, label: 'Tất cả', active: true },
-  { id: 2, label: 'Âm nhạc', icon: '🎵' },
-  { id: 3, label: 'Phim ảnh', icon: '🎬' },
-  { id: 4, label: 'Trò chơi', icon: '🎮' },
-  { id: 5, label: 'Dating', icon: '❤️' },
-  { id: 6, label: 'Học tập', icon: '📚' },
-  { id: 7, label: 'Việc làm', icon: '💼' },
-  { id: 8, label: 'Sức khỏe', icon: '💪' },
-  { id: 9, label: 'Công nghệ', icon: '🚀' },
-  { id: 10, label: 'Ẩm thực', icon: '🍜' },
+import React from 'react';
+
+export const FILTER_LABELS = [
+  { id: 'all', label: 'Tất cả', icon: '🌍' },
+  { id: 'music', label: 'Âm nhạc', icon: '🎵' },
+  { id: 'movies', label: 'Phim ảnh', icon: '🎬' },
+  { id: 'games', label: 'Trò chơi', icon: '🎮' },
+  { id: 'dating', label: 'Dating', icon: '❤️' },
+  { id: 'travel', label: 'Du lịch', icon: '🌴' },
+  { id: 'reading', label: 'Đọc sách', icon: '📚' },
+  { id: 'parttime', label: 'Công việc', icon: '💼' },
+  { id: 'startup', label: 'Công nghệ', icon: '🚀' },
+  { id: 'housework', label: 'Gia đình', icon: '🏠' },
 ];
 
-const FilterMarker = () => {
+interface FilterMarkerProps {
+  activeFilter: string;
+  onFilterChange: (id: string) => void;
+}
+
+const FilterMarker: React.FC<FilterMarkerProps> = ({ activeFilter, onFilterChange }) => {
   return (
-    <div className="fixed left-1/2 -translate-x-1/2 z-[3000] w-[min(96vw,720px)] lg:w-[min(90vw,820px)] px-2 sm:px-3 lg:px-0 pointer-events-none top-16 sm:top-18">
-      {/* Container cuộn ngang trên mobile, wrap trên desktop */}
-      <div className="flex flex-nowrap md:flex-wrap items-center gap-3 overflow-x-auto pb-4 md:pb-0 no-scrollbar">
-        {SAMPLE_FILTERS.map((item) => (
+    <div
+      className="
+      fixed left-1/2 -translate-x-1/2 z-[3000]
+       w-[min(96vw,720px)] lg:w-[min(90vw,820px)]
+       px-2 sm:px-3 lg:px-0 pointer-events-none
+       top-[calc(4.5rem+env(safe-area-inset-top))]
+    "
+    >
+      {/* Scroll container */}
+      <div
+        className="
+        flex flex-nowrap md:flex-wrap items-center
+        gap-2 sm:gap-3
+        overflow-x-auto md:overflow-visible
+        pb-3 md:pb-0
+        no-scrollbar
+        pointer-events-auto
+        snap-x snap-mandatory
+        touch-pan-x md:justify-center
+      "
+      >
+        {FILTER_LABELS.map((item) => (
           <button
             key={item.id}
+            onClick={() => onFilterChange(item.id)}
             className={`
-              flex items-center gap-2 px-5 py-2.5 rounded-full border transition-all duration-200 whitespace-nowrap
-              ${item.active 
-                ? 'bg-black text-white border-black shadow-lg shadow-black/20' 
-                : 'bg-white text-gray-700 border-gray-200 hover:border-gray-400 hover:bg-gray-50'}
+              snap-start shrink-0
+              flex items-center gap-1.5 sm:gap-2
+              px-3 sm:px-5
+              py-2 sm:py-2.5
+              rounded-full border
+              text-xs sm:text-sm
+              transition-all duration-200
+              whitespace-nowrap
+              active:scale-95
+              
+              ${activeFilter === item.id
+                ? 'bg-slate-900 text-white border-slate-900 shadow-xl shadow-slate-900/20 scale-105'
+                : 'bg-white/80 backdrop-blur-xl text-slate-600 border-white shadow-sm hover:border-slate-300 hover:bg-white'}
             `}
           >
-            {item.icon && <span className="text-lg">{item.icon}</span>}
-            <span className="text-sm font-semibold">{item.label}</span>
+            {item.icon && (
+              <span className="text-sm sm:text-base leading-none">
+                {item.icon}
+              </span>
+            )}
+            <span>{item.label}</span>
           </button>
         ))}
       </div>

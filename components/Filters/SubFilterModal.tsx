@@ -28,7 +28,7 @@ const SubFilterModal: React.FC<SubFilterModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-[4000] flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div className="fixed inset-0 z-[5000] flex items-end sm:items-center justify-center p-0 sm:p-4">
       <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300" onClick={onClose} />
       
       <div className="relative w-full max-w-lg bg-white rounded-t-[2.5rem] sm:rounded-[3rem] shadow-2xl overflow-hidden border border-white/20 animate-in slide-in-from-bottom sm:zoom-in duration-500">

@@ -3,6 +3,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { UserProfile, Category, ScoreHistory, ViewMode, DiscoveryMode } from '@/types';
 import { calculatePersonaScore } from '@/utils';
 import { useProfiles } from "@/hooks/useProfiles";
+import { userMatchesFilter } from "@/lib/filtercategory";
 
 import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
@@ -16,6 +17,7 @@ export function useAppState() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [centerTrigger, setCenterTrigger] = useState(0);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<string>('all');
 
   const firestoreUsers = useProfiles();
 
@@ -89,41 +91,41 @@ export function useAppState() {
   const handleOpenReview = () => setIsReviewModalOpen(true);
 
   const handleRecenter = useCallback(() => {
-  if (!("geolocation" in navigator)) {
-    alert("Trình duyệt của bạn không hỗ trợ định vị.");
-    return;
-  }
+    if (!("geolocation" in navigator)) {
+      alert("Trình duyệt của bạn không hỗ trợ định vị.");
+      return;
+    }
 
-  // Cấu hình option dành riêng cho iOS
-  const geoOptions = {
-    enableHighAccuracy: true,
-    timeout: 10000, // Tăng lên 10s vì GPS iPhone cần thời gian khởi động
-    maximumAge: 0
-  };
+    // Cấu hình option dành riêng cho iOS
+    const geoOptions = {
+      enableHighAccuracy: true,
+      timeout: 10000, // Tăng lên 10s vì GPS iPhone cần thời gian khởi động
+      maximumAge: 0
+    };
 
-  navigator.geolocation.getCurrentPosition(
-    (position) => {
-      const { latitude, longitude } = position.coords;
-      setMyProfile(prev => ({ ...prev, location: [latitude, longitude] }));
-      setCenterTrigger(prev => prev + 1);
-    },
-    (error) => {
-      // Xử lý các mã lỗi đặc trưng của Safari
-      switch(error.code) {
-        case error.PERMISSION_DENIED:
-          alert("Safari đã chặn quyền truy cập vị trí. Bạn hãy làm theo hướng dẫn bên dưới để mở lại nhé!");
-          break;
-        case error.POSITION_UNAVAILABLE:
-          alert("Không thể xác định vị trí. Hãy kiểm tra xem bạn đã bật GPS (Dịch vụ định vị) trong cài đặt máy chưa.");
-          break;
-        case error.TIMEOUT:
-          alert("Yêu cầu định vị quá hạn. Hãy thử lại lần nữa.");
-          break;
-      }
-    },
-    geoOptions
-  );
-}, []);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setMyProfile(prev => ({ ...prev, location: [latitude, longitude] }));
+        setCenterTrigger(prev => prev + 1);
+      },
+      (error) => {
+        // Xử lý các mã lỗi đặc trưng của Safari
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            alert("Safari đã chặn quyền truy cập vị trí. Bạn hãy làm theo hướng dẫn bên dưới để mở lại nhé!");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            alert("Không thể xác định vị trí. Hãy kiểm tra xem bạn đã bật GPS (Dịch vụ định vị) trong cài đặt máy chưa.");
+            break;
+          case error.TIMEOUT:
+            alert("Yêu cầu định vị quá hạn. Hãy thử lại lần nữa.");
+            break;
+        }
+      },
+      geoOptions
+    );
+  }, []);
 
   const handleConfirmSave = useCallback(async () => {
     if (!auth.currentUser) {
@@ -209,6 +211,21 @@ export function useAppState() {
     [myProfile]
   );
 
+  // combine me + others
+  const allUsers = useMemo(() => {
+    const others = firestoreUsers.filter(
+      u => u.id !== myProfile.id
+    );
+
+    return [myProfile, ...others];
+  }, [myProfile, firestoreUsers]);
+
+  // ⭐ FILTER USERS
+  const filteredUsers = useMemo(() => {
+    return allUsers.filter(user =>
+      userMatchesFilter(user, activeFilter)
+    );
+  }, [allUsers, activeFilter]);
 
   return {
     viewMode,
@@ -233,6 +250,7 @@ export function useAppState() {
     handleOpenReview,
     handleConfirmSave,
     handleResetDraft, handleUpdateAvatar,
-    handleRecenter, handleUpdateProfile
+    handleRecenter, handleUpdateProfile,
+    activeFilter, setActiveFilter, filteredUsers
   };
 }

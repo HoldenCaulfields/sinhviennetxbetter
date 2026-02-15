@@ -10,7 +10,7 @@ export const CATEGORIES: Category[] = [
     icon: '🎵',
     color: '#F43F5E', 
     subOptions: [
-      { id: 'm1', label: 'Pop' }, { id: 'm2', label: 'Rock' }, { id: 'm3', label: 'Indie' }, { id: 'm4', label: 'EDM' }, { id: 'm5', label: 'Jazz' }
+      { id: 'm1', label: 'Pop' }, { id: 'm2', label: 'Rock' }, { id: 'm3', label: 'Indie' }, { id: 'm4', label: 'EDM' }
     ]
   },
   {
@@ -30,7 +30,7 @@ export const CATEGORIES: Category[] = [
     icon: '❤️',
     color: '#E11D48', 
     subOptions: [
-      { id: 'd1', label: 'Cafe' }, { id: 'd2', label: 'Dạo phố' }, { id: 'd3', label: 'Xem phim' }
+      { id: 'd1', label: 'Cafe' }, { id: 'd2', label: 'Dạo phố' }, { id: 'd3', label: 'Xem phim' }, { id: 'd4', label: 'Đi chơi' }
     ]
   },
   {
@@ -40,7 +40,7 @@ export const CATEGORIES: Category[] = [
     icon: '🎮',
     color: '#991B1B', 
     subOptions: [
-      { id: 'g1', label: 'MOBA' }, { id: 'g2', label: 'FPS' }, { id: 'g3', label: 'RPG' }, { id: 'g4', label: 'Casual' }
+      { id: 'g1', label: 'Liên Quân' }, { id: 'g2', label: 'TFT' }, { id: 'g3', label: 'FreeFire' }, { id: 'g4', label: 'Board games' }
     ]
   },
   {
@@ -50,7 +50,7 @@ export const CATEGORIES: Category[] = [
     icon: '🌴',
     color: '#F0ABFC', 
     subOptions: [
-      { id: 't1', label: 'Phượt' }, { id: 't2', label: 'Nghỉ dưỡng' }, { id: 't3', label: 'Camping' }
+      { id: 't1', label: 'Phượt' }, { id: 't2', label: 'Tham Quan' }, { id: 't3', label: 'Camping' }, { id: 't4', label: 'Đi biển' }
     ]
   },
   // STUDY GROUP (WATER / NƯỚC)
@@ -71,7 +71,7 @@ export const CATEGORIES: Category[] = [
     icon: '📚',
     color: '#06B6D4', 
     subOptions: [
-      { id: 'r1', label: 'Kỹ năng' }, { id: 'r2', label: 'Kinh tế' }, { id: 'r3', label: 'Văn học' }
+      { id: 'r1', label: 'Tiểu Thuyết' }, { id: 'r2', label: 'Kinh tế' }, { id: 'r3', label: 'Văn học' }, { id: 'r4', label: 'Khoa học' }
     ]
   },
   {
@@ -81,7 +81,7 @@ export const CATEGORIES: Category[] = [
     icon: '💼',
     color: '#2563EB', 
     subOptions: [
-      { id: 'p1', label: 'Freelance' }, { id: 'p2', label: 'Gia sư' }, { id: 'p3', label: 'Bán hàng' }
+      { id: 'p1', label: 'Văn Phòng' }, { id: 'p2', label: 'Làm Thêm' }, { id: 'p3', label: 'Bán hàng' }, { id: 'p4', label: 'Dịch vụ' }
     ]
   },
   {
@@ -91,7 +91,7 @@ export const CATEGORIES: Category[] = [
     icon: '🚀',
     color: '#0891B2', 
     subOptions: [
-      { id: 's1', label: 'Công nghệ' }, { id: 's2', label: 'Dịch vụ' }, { id: 's3', label: 'Sáng tạo' }
+      { id: 's1', label: 'Công nghệ' }, { id: 's2', label: 'Dịch vụ' }, { id: 's3', label: 'Content' }, { id: 's4', label: 'Ý Tưởng' }
     ]
   },
   {
@@ -101,7 +101,7 @@ export const CATEGORIES: Category[] = [
     icon: '🏠',
     color: '#1E40AF', 
     subOptions: [
-      { id: 'h1', label: 'Nấu ăn' }, { id: 'h2', label: 'Dọn dẹp' }, { id: 'h3', label: 'Chăm sóc' }
+      { id: 'h1', label: 'Nấu ăn' }, { id: 'h2', label: 'Dọn dẹp' }, { id: 'h3', label: 'Lắp Đặt' }, { id: 'h4', label: 'Trang Trí' }
     ]
   }
 ];

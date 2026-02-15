@@ -18,7 +18,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ group, selectedIds, onCategoryCli
   fixed left-1/2 -translate-x-1/2 z-[3000]
   w-[min(96vw,720px)] lg:w-[min(90vw,820px)]   // 👈 responsive width
   px-2 sm:px-3 lg:px-0
-  pointer-events-none
+  pointer-events-none 
   ${position === 'top' ? 'top-16 sm:top-18' : 'bottom-6 sm:bottom-10'}
 `}>
 
@@ -47,7 +47,7 @@ const FilterBar: React.FC<FilterBarProps> = ({ group, selectedIds, onCategoryCli
             h-[60px] sm:h-[70px] lg:h-[64px]   // 👈 chiều cao ổn định
             gap-1
             rounded-xl sm:rounded-2xl
-            transition-all duration-300 border
+            transition-all 
             ${isActive
                   ? 'bg-white shadow-md border-slate-100 scale-[1.04] z-10'
                   : 'bg-white/40 text-slate-400 border-white/50 hover:bg-white/80'

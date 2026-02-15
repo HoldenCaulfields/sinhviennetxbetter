@@ -8,7 +8,7 @@ import AllMarkers from './AllMarkers';
 interface MapLayerProps {
   myProfile: UserProfile;
   personaScore: PersonaScore;
-  firestoreUsers: UserProfile[];
+  firestoreUsers: UserProfile[]; filteredUsers: UserProfile[];
   discoveryMode: DiscoveryMode;
   centerTrigger: number;
   onUserClick: (user: UserProfile) => void;
@@ -30,7 +30,7 @@ const INITIAL_LOCATION: [number, number] = [16, 107];
 const MapLayer: React.FC<MapLayerProps> = ({
   myProfile,
   personaScore,
-  firestoreUsers,
+  firestoreUsers, filteredUsers,
   discoveryMode,
   centerTrigger,
   onUserClick, onOpenEdit,
@@ -55,7 +55,7 @@ const MapLayer: React.FC<MapLayerProps> = ({
         />
         <MapController location={myProfile.location} trigger={centerTrigger} />
         
-        <AllMarkers users={firestoreUsers} onUserClick={onUserClick} />
+        <AllMarkers users={filteredUsers} onUserClick={onUserClick} />
       </MapContainer>
 
       {/* Ghost Marker Centerpiece - Tinh hoa thiết kế */}

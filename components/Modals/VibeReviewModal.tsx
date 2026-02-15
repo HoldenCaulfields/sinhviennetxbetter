@@ -35,7 +35,7 @@ const VibeReviewModal: React.FC<VibeReviewModalProps> = ({ myProfile, score, onC
         dragConstraints={{ top: 0 }}
         dragElastic={0.2}
         onDragEnd={(_, info) => { if (info.offset.y > 100) onClose(); }}
-        className="relative w-full max-w-xl bg-white rounded-t-[2.5rem] sm:rounded-[3rem] shadow-[0_32px_128px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[85vh]"
+        className="relative w-full max-w-xl bg-white rounded-t-[2.5rem] sm:rounded-[3rem] shadow-[0_32px_128px_rgba(0,0,0,0.4)] overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[85dvh]"
       >
         {/* Mobile Pull Handle */}
         <div className="h-1.5 w-12 bg-slate-200 rounded-full mx-auto mt-3 shrink-0 sm:hidden" />
