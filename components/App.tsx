@@ -1,0 +1,97 @@
+'use client';
+
+import { useAppState } from '@/hooks/useAppState';
+import UIOverlay from '@/components/UI/UIOverlay';
+import PersonaDetailModal from '@/components/Modals/PersonaDetailModal';
+import dynamic from "next/dynamic";
+import Loading from "./Loading";
+import EditProfileModal from './Modals/EditProfileModal';
+
+const MapLayer = dynamic(() => import('@/components/Map/MapLayer'), {
+  ssr: false,
+  loading: () => (
+    <Loading />
+  ),
+});
+
+export default function App() {
+  const {
+    viewMode, setViewMode,
+    discoveryMode, setDiscoveryMode,
+    isReviewModalOpen, setIsReviewModalOpen,
+    isEditProfileOpen, setIsEditProfileOpen,
+    centerTrigger,
+    myProfile, setMyProfile,
+    activeCategory, setActiveCategory,
+    selectedUser, setSelectedUser,
+    personaScore,
+    firestoreUsers,
+    handleToggleOption, handleAddCustomTag, handleRemoveCustomTag, handleUpdateProfile,
+    handleOpenReview, handleConfirmSave, handleRecenter, handleResetDraft, handleUpdateAvatar,
+  } = useAppState();
+
+  return (
+    <div className="relative h-screen w-full overflow-hidden bg-[#F1F5F9]">
+      
+      {/* Map Layer - Handles background and markers */}
+      <MapLayer 
+        myProfile={myProfile}
+        personaScore={personaScore}
+        firestoreUsers={firestoreUsers}
+        discoveryMode={discoveryMode}
+        centerTrigger={centerTrigger}
+        onUserClick={setSelectedUser}
+        onOpenEdit={() => setIsEditProfileOpen(true)}
+      />
+
+      {/* UI Overlay - Handles timeline navigation, floating menus, filters, and HUD */}
+      <UIOverlay 
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        discoveryMode={discoveryMode}
+        setDiscoveryMode={setDiscoveryMode}
+        isReviewModalOpen={isReviewModalOpen}
+        setIsReviewModalOpen={setIsReviewModalOpen}
+        myProfile={myProfile}
+        setMyProfile={setMyProfile}
+        personaScore={personaScore}
+        activeCategory={activeCategory}
+        setActiveCategory={setActiveCategory}
+        handleToggleOption={handleToggleOption}
+        handleAddCustomTag={handleAddCustomTag}
+        handleRemoveCustomTag={handleRemoveCustomTag}
+        handleOpenReview={handleOpenReview}
+        handleConfirmSave={handleConfirmSave}
+        handleRecenter={handleRecenter}
+        handleResetDraft={handleResetDraft}
+        setSelectedUser={setSelectedUser}
+      />
+
+      {/* Standalone Modals (outside UI hierarchy to prevent stacking context issues) */}
+      {selectedUser && (
+        <PersonaDetailModal 
+          user={selectedUser} 
+          myScore={personaScore} 
+          onClose={() => setSelectedUser(null)} 
+        />
+      )}
+
+      {/* Edit Profile Modal */}
+      {isEditProfileOpen && (
+        <EditProfileModal
+          profile={myProfile}
+          onSave={handleUpdateProfile}
+          onClose={() => setIsEditProfileOpen(false)}
+        />
+      )}
+
+      {/* Global Style / Animations */}
+      <style>{`
+        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .animate-spin-slow { animation: spin-slow 20s linear infinite; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
+    </div>
+  );
+}
