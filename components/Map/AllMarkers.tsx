@@ -7,6 +7,33 @@ import { useAppState } from "@/hooks/useAppState";
 import { triggerFireworkAtPoint } from "@/utils";
 import { useMap } from 'react-leaflet';
 
+const getCategoryColor = (category: string) => {
+  switch (category) {
+    case "party":
+      return "bg-red-500";
+    case "coffee":
+      return "bg-amber-600";
+    case "study":
+      return "bg-blue-600";
+    default:
+      return "bg-gray-500";
+  }
+};
+
+const getCategoryIcon = (category: string) => {
+  switch (category) {
+    case "party":
+      return "🎉";
+    case "coffee":
+      return "☕";
+    case "study":
+      return "📚";
+    default:
+      return "📌";
+  }
+};
+
+
 // Hàm tạo Icon HTML tĩnh cho Leaflet
 function createMarkerIcon(marker: UserProfile) {
   const avatarUrl = marker.avatar || `/tet.jpg`;
@@ -102,12 +129,17 @@ export default function AllMarkers({
             className: 'bg-none',
             html: `
         <div class="relative group">
-          <div class="w-12 h-12 bg-red-600 rounded-2xl rotate-45 flex items-center justify-center shadow-[0_0_20px_rgba(79,70,229,0.5)] border-2 border-yellow-500 animate-bounce">
-            <div class="-rotate-45 text-xl">
-              ${event.category === 'party' ? '🎉' : event.category === 'coffee' ? '☕' : '📚'}
-            </div>
+        <div class="w-12 h-12 ${getCategoryColor(event.category)}
+          rounded-2xl rotate-45 flex items-center justify-center
+          shadow-[0_0_10px_rgba(79,70,229,0.5)]
+          border-2 border-yellow-500 animate-bounce">
+
+          <div class="-rotate-45 text-xl">
+            ${getCategoryIcon(event.category)}
           </div>
+
         </div>
+      </div>
       `,
             iconSize: [48, 48],
             iconAnchor: [24, 24],

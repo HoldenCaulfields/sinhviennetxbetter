@@ -1,22 +1,38 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  X, Heart, Hash, Share2, Sparkles, MapPin, 
+import {
+  X, Heart, Hash, Share2, Sparkles, MapPin,
   Facebook, Instagram, Youtube, Link2, Clock, Info
 } from 'lucide-react';
-import { UserProfile, PersonaScore, SocialLinks } from '../../types';
-import { getPersonaLabel, calculateCompatibility, calculatePersonaScore } from '../../utils';
+import { UserProfile, PersonaScore, SocialLinks } from '@/types';
+import { getPersonaLabel, calculateCompatibility, calculatePersonaScore, calculateDistance } from '@/utils';
+import { CATEGORIES } from '@/constants';
 
 interface PersonaDetailModalProps {
   user: UserProfile;
   myScore: PersonaScore;
+  myLocation: [number, number];
   onClose: () => void;
 }
 
-const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, onClose }) => {
+const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, onClose, myLocation }) => {
   const isMe = user.id === 'me' || user.id === 'Bạn';
   const score = isMe ? myScore : (user.selectedOptions ? calculatePersonaScore(user.selectedOptions) : { fun: 50, study: 50 });
   const comp = !isMe ? calculateCompatibility(myScore, score) : null;
+  const distance =
+    !isMe && user.location && myLocation
+      ? calculateDistance(myLocation, user.location)
+      : null;
+
+  const selectedOptions = CATEGORIES.flatMap(cat =>
+    cat.subOptions
+      .filter(opt => user.selectedOptions?.includes(opt.id))
+      .map(opt => ({
+        ...opt,
+        categoryIcon: cat.icon,
+        categoryLabel: cat.label
+      }))
+  );
 
   // Render Social Icons Helper
   const renderSocials = (links?: SocialLinks) => {
@@ -29,10 +45,10 @@ const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, 
     ].filter(item => item.link);
 
     return icons.map(item => (
-      <a 
-        key={item.id} 
-        href={item.link} 
-        target="_blank" 
+      <a
+        key={item.id}
+        href={item.link}
+        target="_blank"
         className={`w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-all ${item.color} hover:text-white active:scale-90`}
       >
         {item.icon}
@@ -61,9 +77,8 @@ const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, 
         </div>
 
         {/* Header - Rút gọn để nhường chỗ cho nội dung mới */}
-        <div className={`relative p-6 sm:p-8 text-white shrink-0 ${
-          score.fun > score.study ? 'bg-gradient-to-br from-orange-600 to-pink-600' : 'bg-gradient-to-br from-blue-600 to-cyan-500'
-        }`}>
+        <div className={`relative p-6 sm:p-8 text-white shrink-0 ${score.fun > score.study ? 'bg-gradient-to-br from-orange-600 to-pink-600' : 'bg-gradient-to-br from-blue-600 to-cyan-500'
+          }`}>
           <div className="relative z-10 flex items-center gap-5">
             <div className="relative shrink-0">
               <div className="absolute inset-0 bg-white/20 rounded-3xl rotate-6" />
@@ -74,11 +89,11 @@ const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, 
                 </div>
               )}
             </div>
-            
+
             <div className="flex-1 min-w-0">
               <h2 className="text-xl sm:text-2xl font-black truncate drop-shadow-sm uppercase">{isMe ? 'Hồ sơ của bạn' : user.name}</h2>
               <div className="flex items-center gap-2 mt-1 opacity-90 text-[10px] font-bold uppercase tracking-wider">
-                <MapPin size={12} /> {isMe ? 'Vị trí của bạn' : 'Cách bạn 2.5km'}
+                <MapPin size={12} /> {isMe ? 'Vị trí của bạn' : distance ? `Cách bạn ${distance} km` : 'Không rõ vị trí'}
               </div>
               <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full border border-white/20 text-[9px] font-black uppercase tracking-widest">
                 <Sparkles size={10} /> {getPersonaLabel(score)}
@@ -89,7 +104,7 @@ const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, 
 
         {/* Body Content */}
         <div className="px-6 py-6 sm:px-10 overflow-y-auto scrollbar-hide flex-1 space-y-7 touch-auto">
-          
+
           {/* Bio Section */}
           {user.bio && (
             <div className="relative p-5 bg-slate-50 rounded-[2rem] border border-slate-100">
@@ -112,14 +127,14 @@ const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, 
             </div>
             {!isMe && comp !== null && (
               <div className="col-span-2 p-4 bg-slate-900 rounded-[2rem] flex items-center justify-between text-white overflow-hidden relative group">
-                 <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-transparent opacity-50" />
-                 <div className="flex items-center gap-3 relative z-10">
-                    <div className="w-10 h-10 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                      <Heart size={20} fill="currentColor" />
-                    </div>
-                    <span className="text-sm font-black italic">Độ tương hợp</span>
-                 </div>
-                 <span className="text-3xl font-black text-emerald-400 relative z-10 tabular-nums">{comp}%</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 to-transparent opacity-50" />
+                <div className="flex items-center gap-3 relative z-10">
+                  <div className="w-10 h-10 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                    <Heart size={20} fill="currentColor" />
+                  </div>
+                  <span className="text-sm font-black italic">Độ tương hợp</span>
+                </div>
+                <span className="text-3xl font-black text-emerald-400 relative z-10 tabular-nums">{comp}%</span>
               </div>
             )}
           </div>
@@ -128,7 +143,7 @@ const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, 
           {user.socialLinks && (
             <div className="space-y-3">
               <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                <Link2 size={14} /> Kết nối mạng xã hội
+                <Link2 size={14} />Mạng xã hội đã kết nối
               </h4>
               <div className="flex gap-3">
                 {renderSocials(user.socialLinks)}
@@ -136,17 +151,21 @@ const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, 
             </div>
           )}
 
-          {/* History / Timeline Section */}
-          {user.history && user.history.length > 0 && (
-            <div className="space-y-4">
-              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                <Clock size={14} /> Lịch sử Soulmate
+          {/* Selected Options */}
+          {selectedOptions.length > 0 && (
+            <div className="space-y-3">
+              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                Các lựa chọn
               </h4>
-              <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide">
-                {user.history.map((h, i) => (
-                  <div key={i} className="shrink-0 p-3 bg-slate-50 border border-slate-100 rounded-2xl min-w-[100px] text-center">
-                    <div className="text-[8px] font-bold text-slate-400 mb-1">{h.date}</div>
-                    <div className="text-xs font-black text-slate-700">F:{h.score.fun} | S:{h.score.study}</div>
+
+              <div className="flex flex-wrap gap-2">
+                {selectedOptions.map((opt, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-indigo-50 text-indigo-600 text-[10px] font-extrabold rounded-xl uppercase"
+                  >
+                    <span className="text-sm">{opt.categoryIcon}</span>
+                    {opt.label}
                   </div>
                 ))}
               </div>
@@ -156,7 +175,7 @@ const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, 
           {/* Tags */}
           <div className="space-y-3">
             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-              <Hash size={14} /> Vibe độc bản
+              <Hash size={14} /> HashTags đã thêm
             </h4>
             <div className="flex flex-wrap gap-2">
               {user.customTags.map((t, i) => (
@@ -174,9 +193,9 @@ const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, 
             <Share2 size={18} /> Chia sẻ Vibe
           </button>
           {!isMe && (
-             <button className="flex-1 py-4 bg-white border-2 border-slate-200 text-slate-900 rounded-2xl flex items-center justify-center active:scale-95 transition-all">
-                <Info size={22} />
-             </button>
+            <button className="flex-1 py-4 bg-white border-2 border-slate-200 text-slate-900 rounded-2xl flex items-center justify-center active:scale-95 transition-all">
+              <Info size={22} />
+            </button>
           )}
         </div>
       </motion.div>

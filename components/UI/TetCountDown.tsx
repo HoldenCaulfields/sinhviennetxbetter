@@ -72,7 +72,7 @@ const TetCountdown: React.FC = () => {
               <div className="flex items-center gap-1.5">
                 <Sparkles className="w-3 h-3 md:w-3.5 md:h-3.5 text-yellow-300 animate-pulse" />
                 <span className="text-[9px] md:text-[10px] font-black text-yellow-200 uppercase tracking-[0.25em] drop-shadow-sm">
-                  Đến Giao Thừa
+                  Đón Giao Thừa
                 </span>
               </div>
 

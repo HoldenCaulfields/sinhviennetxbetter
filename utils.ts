@@ -116,3 +116,28 @@ const createMegaExplosion = (x: number, y: number) => {
 
   shoot();
 };
+
+export function calculateDistance(
+  loc1: [number, number],
+  loc2: [number, number]
+) {
+  const toRad = (value: number) => (value * Math.PI) / 180;
+
+  const [lat1, lon1] = loc1;
+  const [lat2, lon2] = loc2;
+
+  const R = 6371; // bán kính trái đất (km)
+
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) ** 2;
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return (R * c).toFixed(1); // km
+}

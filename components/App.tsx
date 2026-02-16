@@ -82,6 +82,7 @@ export default function App() {
         <PersonaDetailModal
           user={selectedUser}
           myScore={personaScore}
+          myLocation={myProfile.location}
           onClose={() => setSelectedUser(null)}
         />
       )}
