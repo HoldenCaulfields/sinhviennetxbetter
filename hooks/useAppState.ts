@@ -296,7 +296,7 @@ export function useAppState() {
         ...eventData,
         creatorId: auth.currentUser.uid,
         attendees: [auth.currentUser.uid],
-        startTime: new Date().toISOString(),
+        startTime: eventData.startTime || new Date().toISOString(),
         createdAt: serverTimestamp(),
       };
 

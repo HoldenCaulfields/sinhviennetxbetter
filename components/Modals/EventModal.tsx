@@ -2,7 +2,10 @@
 
 import { MapEvent } from '@/types';
 import { useAppState } from '@/hooks/useAppState';
-import { useEffect } from 'react';
+import { useProfiles } from '@/hooks/useProfiles';
+import { useEffect, useMemo, useState } from 'react';
+import { X, Calendar, Clock, Users, CheckCircle2, Star } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface EventModalProps {
   event: MapEvent;
@@ -11,182 +14,186 @@ interface EventModalProps {
 
 export default function EventModal({ event, onClose }: EventModalProps) {
   const { handleJoinEvent, myProfile } = useAppState();
-
+  const firestoreUsers = useProfiles();
   const isJoined = event.attendees?.includes(myProfile.id);
 
+  /* ================= ESC CLOSE ================= */
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
-
     window.addEventListener('keydown', handleEsc);
     return () => window.removeEventListener('keydown', handleEsc);
   }, [onClose]);
 
-  const formatTime = (iso: string) => {
-    return new Date(iso).toLocaleString('vi-VN', {
-      dateStyle: 'medium',
-      timeStyle: 'short',
-    });
-  };
+  /* ================= LOGIC & HELPERS ================= */
+  const creator = useMemo(() => firestoreUsers.find(u => u.id === event.creatorId), [firestoreUsers, event.creatorId]);
+  const attendeeProfiles = useMemo(() => firestoreUsers.filter(u => event.attendees?.includes(u.id)), [firestoreUsers, event.attendees]);
 
-  const getCategoryIcon = () => {
+  const [timeLeft, setTimeLeft] = useState('');
+  useEffect(() => {
+    const updateCountdown = () => {
+      const diff = new Date(event.startTime).getTime() - Date.now();
+      if (diff <= 0) { setTimeLeft('Đang diễn ra'); return; }
+      const hours = Math.floor(diff / 1000 / 60 / 60);
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+      setTimeLeft(`${hours}h ${minutes}m ${seconds}s`);
+    };
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+    return () => clearInterval(timer);
+  }, [event.startTime]);
+
+  const getCategoryTheme = () => {
     switch (event.category) {
-      case 'party':
-        return '🎉';
-      case 'coffee':
-        return '☕';
-      case 'study':
-        return '📚';
-      default:
-        return '📍';
+      case 'party': return { icon: '🎉', color: 'bg-rose-500', gradient: 'from-rose-500 to-pink-600', text: 'text-rose-600' };
+      case 'coffee': return { icon: '☕', color: 'bg-amber-500', gradient: 'from-amber-500 to-orange-600', text: 'text-amber-600' };
+      case 'study': return { icon: '📚', color: 'bg-indigo-500', gradient: 'from-indigo-500 to-blue-600', text: 'text-indigo-600' };
+      default: return { icon: '📍', color: 'bg-slate-500', gradient: 'from-slate-500 to-slate-600', text: 'text-slate-600' };
     }
   };
 
-  const getCategoryColor = () => {
-    switch (event.category) {
-      case 'party':
-        return 'from-red-500 to-red-600';
-      case 'coffee':
-        return 'from-amber-500 to-orange-600';
-      case 'study':
-        return 'from-blue-500 to-indigo-600';
-      default:
-        return 'from-slate-500 to-slate-600';
-    }
-  };
-
-  const handleJoin = async () => {
-    if (!isJoined) {
-      await handleJoinEvent(event.id);
-    }
-  };
+  const theme = getCategoryTheme();
 
   return (
-    <div
-      className="fixed inset-0 z-[4000] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm px-4 sm:px-0"
-      onClick={onClose}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="w-full max-w-md bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-[slideUp_.3s_cubic-bezier(0.16,1,0.3,1)]"
-      >
-        {/* Header với gradient */}
-        <div className={`bg-gradient-to-br ${getCategoryColor()} p-6 text-white relative overflow-hidden`}>
-          {/* Background pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute -right-8 -top-8 w-32 h-32 bg-white rounded-full" />
-            <div className="absolute -left-12 -bottom-12 w-40 h-40 bg-white rounded-full" />
-          </div>
+    <div className="fixed inset-0 z-[5000] flex items-end sm:items-center justify-center p-0 sm:p-4">
+      {/* Backdrop */}
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" 
+      />
 
-          {/* Close button */}
+      {/* Modal Content */}
+      <motion.div
+        initial={{ y: "100%" }}
+        animate={{ y: 0 }}
+        exit={{ y: "100%" }}
+        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+        drag="y"
+        dragConstraints={{ top: 0 }}
+        dragElastic={0.15}
+        onDragEnd={(_, info) => {
+          if (info.offset.y > 150) onClose();
+        }}
+        className="relative bg-white w-full max-w-md rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-2xl overflow-hidden touch-none"
+      >
+        {/* Mobile Drag Handle */}
+        <div className="absolute top-3 left-0 right-0 flex justify-center z-10 sm:hidden">
+          <div className="w-12 h-1.5 bg-white/30 rounded-full" />
+        </div>
+
+        {/* HEADER SECTION */}
+        <div className={`relative bg-gradient-to-br ${theme.gradient} p-8 pt-10 text-white`}>
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-sm transition-colors"
+            className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 rounded-full transition-colors hidden sm:block"
           >
-            <span className="text-white text-lg">✕</span>
+            <X size={18} />
           </button>
 
-          {/* Content */}
-          <div className="relative z-10">
-            <div className="text-5xl mb-3 drop-shadow-lg">{getCategoryIcon()}</div>
-            <h2 className="text-2xl font-bold mb-2 leading-tight">{event.title}</h2>
-            <div className="flex items-center gap-2 text-white/90">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="text-sm font-medium">{formatTime(event.startTime)}</span>
+          <div className="flex justify-between items-start ">
+            <div className="text-6xl mb-4 filter drop-shadow-lg">{theme.icon}</div>
+            <div className="bg-white/20 backdrop-blur-md px-3 py-1 mt-3 rounded-full text-xs font-bold flex items-center gap-1.5 border border-white/20">
+              <Clock size={12} /> {timeLeft}
             </div>
+          </div>
+          
+          <h2 className="text-3xl font-black tracking-tight leading-tight">{event.title}</h2>
+          
+          <div className="flex items-center gap-2 mt-3 text-white/90 font-medium">
+            <Calendar size={16} />
+            <span className="text-sm">
+              {new Date(event.startTime).toLocaleString('vi-VN', { dateStyle: 'medium', timeStyle: 'short' })}
+            </span>
           </div>
         </div>
 
-        {/* Body */}
-        <div className="p-6 space-y-5">
-          {/* Description */}
-          {event.description && (
-            <div className="bg-slate-50 rounded-2xl p-4">
-              <div className="flex items-start gap-2">
-                <span className="text-lg mt-0.5">💬</span>
-                <p className="text-sm text-slate-700 leading-relaxed flex-1">
-                  {event.description}
+        {/* BODY SECTION */}
+        <div className="p-8 space-y-8 max-h-[60vh] overflow-y-auto no-scrollbar">
+          
+          {/* Creator & Description */}
+          <div className="space-y-4">
+            {creator && (
+              <div className="flex items-center gap-3">
+                <div className="relative">
+                  <img
+                    src={creator.avatar || '/avatar-placeholder.png'}
+                    className="w-12 h-12 rounded-2xl object-cover ring-2 ring-slate-100"
+                  />
+                  <div className="absolute -bottom-1 -right-1 bg-amber-400 text-white p-0.5 rounded-md border-2 border-white">
+                    <Star size={10} fill="currentColor" />
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Host</p>
+                  <h4 className="font-bold text-slate-800 leading-none">{creator.name}</h4>
+                </div>
+              </div>
+            )}
+
+            {event.description && (
+              <div className="relative">
+                <p className="text-slate-600 leading-relaxed italic pl-4 border-l-4 border-slate-100">
+                  "{event.description}"
                 </p>
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
-          {/* Info cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-
-            {/* Attendees */}
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-4 border border-purple-100">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 bg-purple-500 rounded-lg flex items-center justify-center text-white">
-                  👥
-                </div>
-                <span className="font-semibold text-slate-800 text-sm">Tham gia</span>
+          {/* Attendees Section */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2 font-bold text-slate-800">
+                <Users size={18} className={theme.text} />
+                <span>Người tham gia</span>
               </div>
-              <p className="text-2xl font-bold text-slate-800">
+              <span className="text-xs font-black px-2 py-1 bg-slate-100 rounded-lg text-slate-500">
                 {event.attendees?.length || 0}
-                <span className="text-sm font-normal text-slate-500 ml-1">người</span>
-              </p>
+              </span>
             </div>
+
+            {attendeeProfiles.length === 0 ? (
+              <div className="py-4 text-center border-2 border-dashed border-slate-100 rounded-2xl text-slate-400 text-sm">
+                Chưa có ai tham gia. Hãy là người đầu tiên!
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {attendeeProfiles.map((user) => (
+                  <motion.img
+                    whileHover={{ y: -5 }}
+                    key={user.id}
+                    src={user.avatar || '/avatar-placeholder.png'}
+                    title={user.name}
+                    className="w-10 h-10 rounded-xl object-cover ring-2 ring-white shadow-sm"
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="p-6 pt-0">
+        {/* ACTION FOOTER */}
+        <div className="p-8 pt-2">
           {isJoined ? (
-            <div className="w-full text-center py-4 rounded-2xl bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200">
-              <div className="flex items-center justify-center gap-2">
-                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <span className="text-green-700 font-semibold">Bạn đã tham gia</span>
-              </div>
+            <div className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl bg-emerald-50 text-emerald-600 font-bold border-2 border-emerald-100">
+              <CheckCircle2 size={20} />
+              Đã đăng ký tham gia
             </div>
           ) : (
-            <button
-              onClick={handleJoin}
-              className="w-full py-4 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 active:scale-[0.98]"
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleJoinEvent(event.id)}
+              className={`w-full py-5 rounded-2xl ${theme.color} text-white font-black text-lg shadow-xl shadow-indigo-100 hover:brightness-110 transition-all`}
             >
-              <span className="flex items-center justify-center gap-2">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-                Tham gia sự kiện
-              </span>
-            </button>
+              THAM GIA NGAY
+            </motion.button>
           )}
         </div>
-      </div>
-
-      <style jsx>{`
-        @keyframes slideUp {
-          from {
-            transform: translateY(100%);
-            opacity: 0;
-          }
-          to {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-
-        @media (min-width: 640px) {
-          @keyframes slideUp {
-            from {
-              transform: translateY(20px) scale(0.95);
-              opacity: 0;
-            }
-            to {
-              transform: translateY(0) scale(1);
-              opacity: 1;
-            }
-          }
-        }
-      `}</style>
+      </motion.div>
     </div>
   );
 }
