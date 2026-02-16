@@ -48,3 +48,14 @@ export interface PersonaScore {
   fun: number;
   study: number;
 }
+
+export interface MapEvent {
+  id: string;
+  creatorId: string;
+  title: string;
+  description: string;
+  location: [number, number];
+  startTime: string;
+  category: 'party' | 'study' | 'coffee';
+  attendees: string[]; // Danh sách User IDs
+}

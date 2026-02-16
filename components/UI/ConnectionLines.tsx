@@ -13,10 +13,9 @@ interface Line {
 
 interface ConnectionLinesProps {
   selectedOptions: string[];
-  isPinned: boolean;
 }
 
-const ConnectionLines: React.FC<ConnectionLinesProps> = ({ selectedOptions, isPinned }) => {
+const ConnectionLines: React.FC<ConnectionLinesProps> = ({ selectedOptions }) => {
   const [lines, setLines] = useState<Line[]>([]);
 
   const updateLines = useCallback(() => {
@@ -67,7 +66,6 @@ const ConnectionLines: React.FC<ConnectionLinesProps> = ({ selectedOptions, isPi
     };
   }, [updateLines]);
 
-  if (isPinned || lines.length === 0) return null;
 
   return (
     <svg className="fixed inset-0 pointer-events-none z-[2000] w-full h-full overflow-visible">

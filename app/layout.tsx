@@ -21,8 +21,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "TheLonelyNet",
+  title: "TheLovelyNet",
   description: "Khong Duoc Noi Ve The LonelyNet",
+  icons: {
+    icon: "/logo.svg",
+  },
 };
 
 export const viewport = {

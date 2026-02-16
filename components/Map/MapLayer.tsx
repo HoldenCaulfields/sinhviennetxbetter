@@ -17,11 +17,13 @@ interface MapLayerProps {
 
 const MapController: React.FC<{ location: [number, number], trigger: number }> = ({ location, trigger }) => {
   const map = useMap();
+
   useEffect(() => {
     if (trigger > 0) {
       map.flyTo(location as any, 14, { duration: 1.5 });
     }
   }, [trigger, location, map]);
+
   return null;
 };
 
@@ -54,42 +56,43 @@ const MapLayer: React.FC<MapLayerProps> = ({
           attribution=' &copy; <a href="https://carto.com/">CARTO</a>'
         />
         <MapController location={myProfile.location} trigger={centerTrigger} />
-        
+
         <AllMarkers users={filteredUsers} onUserClick={onUserClick} />
+
       </MapContainer>
 
       {/* Ghost Marker Centerpiece - Tinh hoa thiết kế */}
-        <div className={`absolute inset-0 z-[3000] flex items-center justify-center pointer-events-none overflow-hidden ${isSelfMode ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
+      <div className={`absolute inset-0 z-[3000] flex items-center justify-center pointer-events-none overflow-hidden ${isSelfMode ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'}`}>
 
-          {/* Lớp phủ khí quyển */}
-          <div className="absolute inset-0 bg-slate-900/[0.02]" />
+        {/* Lớp phủ khí quyển */}
+        <div className="absolute inset-0 bg-slate-900/[0.02]" />
 
-          {/* Radar Sóng Nước & Lửa */}
-          <div className="absolute w-[220px] h-[220px] sm:w-[320px] sm:h-[320px] rounded-full border-2 border-blue-400/20 animate-ping opacity-20" />
-          <div className="absolute w-[440px] h-[440px] sm:w-[640px] sm:h-[640px] rounded-full border-2 border-red-400/10 animate-ping opacity-10" style={{ animationDelay: '1s' }} />
+        {/* Radar Sóng Nước & Lửa */}
+        <div className="absolute w-[220px] h-[220px] sm:w-[320px] sm:h-[320px] rounded-full border-2 border-blue-400/20 animate-ping opacity-20" />
+        <div className="absolute w-[440px] h-[440px] sm:w-[640px] sm:h-[640px] rounded-full border-2 border-red-400/10 animate-ping opacity-10" style={{ animationDelay: '1s' }} />
 
-          {/* Tâm điểm ngắm (Crosshair) */}
-          <div className="absolute w-[1px] h-32 sm:h-48 bg-gradient-to-b from-transparent via-slate-400/30 to-transparent" />
-          <div className="absolute h-[1px] w-32 sm:w-48 bg-gradient-to-r from-transparent via-slate-400/30 to-transparent" />
+        {/* Tâm điểm ngắm (Crosshair) */}
+        <div className="absolute w-[1px] h-32 sm:h-48 bg-gradient-to-b from-transparent via-slate-400/30 to-transparent" />
+        <div className="absolute h-[1px] w-32 sm:w-48 bg-gradient-to-r from-transparent via-slate-400/30 to-transparent" />
 
-          {/* Các vòng quay cơ khí nghệ thuật */}
-          <div className="absolute w-40 h-40 sm:w-56 sm:h-56 border border-dashed border-red-500/40 rounded-full animate-[spin_10s_linear_infinite]" />
-          <div className="absolute w-48 h-48 sm:w-64 sm:h-64 border border-dashed border-blue-500/30 rounded-full animate-[spin_15s_linear_infinite_reverse]" />
+        {/* Các vòng quay cơ khí nghệ thuật */}
+        <div className="absolute w-40 h-40 sm:w-56 sm:h-56 border border-dashed border-red-500/40 rounded-full animate-[spin_10s_linear_infinite]" />
+        <div className="absolute w-48 h-48 sm:w-64 sm:h-64 border border-dashed border-blue-500/30 rounded-full animate-[spin_15s_linear_infinite_reverse]" />
 
-          {/* Marker Trung Tâm - Với ID 'persona-center' cho connection lines */}
-          <div id="persona-center" className="transform scale-125 sm:scale-150 transition-all duration-700 hover:scale-110">
-            <CustomMarker user={myProfile}  myScore={personaScore} onOpenEdit={onOpenEdit} />
-          </div>
-
-          {/* Khung góc phong cách Sci-Fi */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 sm:w-64 sm:h-64 pointer-events-none">
-            <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-red-500/50 rounded-tl-xl" />
-            <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-blue-500/50 rounded-tr-xl" />
-            <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-red-500/50 rounded-bl-xl" />
-            <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-blue-500/50 rounded-br-xl" />
-          </div>
-
+        {/* Marker Trung Tâm - Với ID 'persona-center' cho connection lines */}
+        <div id="persona-center" className="transform scale-125 sm:scale-150 transition-all duration-700 hover:scale-110">
+          <CustomMarker user={myProfile} myScore={personaScore} onOpenEdit={onOpenEdit} />
         </div>
+
+        {/* Khung góc phong cách Sci-Fi */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 sm:w-64 sm:h-64 pointer-events-none">
+          <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-red-500/50 rounded-tl-xl" />
+          <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-blue-500/50 rounded-tr-xl" />
+          <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-red-500/50 rounded-bl-xl" />
+          <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-blue-500/50 rounded-br-xl" />
+        </div>
+
+      </div>
     </div>
   );
 };

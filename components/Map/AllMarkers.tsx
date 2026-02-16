@@ -1,8 +1,11 @@
 'use client';
-import { Marker } from "react-leaflet";
-import { memo, useMemo } from "react";
+import { Marker, Tooltip } from "react-leaflet";
+import { memo, useMemo, useEffect } from "react";
 import L from "leaflet";
 import { UserProfile } from "@/types";
+import { useAppState } from "@/hooks/useAppState";
+import { triggerFireworkAtPoint } from "@/utils";
+import { useMap } from 'react-leaflet';
 
 // Hàm tạo Icon HTML tĩnh cho Leaflet
 function createMarkerIcon(marker: UserProfile) {
@@ -11,8 +14,8 @@ function createMarkerIcon(marker: UserProfile) {
   const score = latestHistory?.score || { fun: 50, study: 50 };
   const total = score.fun + score.study || 1;
   const funPercent = (score.fun / total) * 100;
-  
-  const size = 40; 
+
+  const size = 40;
   const stroke = 4;
   const center = size / 2;
   const radius = center - stroke / 2;
@@ -47,19 +50,72 @@ function createMarkerIcon(marker: UserProfile) {
 const UserMarker = memo(({ marker, onClick }: { marker: UserProfile; onClick: (marker: UserProfile) => void }) => {
   const customIcon = useMemo(() => createMarkerIcon(marker), [marker.avatar, marker.name, marker.history]);
   return (
-    <Marker 
-      position={marker.location} 
-      icon={customIcon} 
-      eventHandlers={{ click: () => onClick(marker) }} 
+    <Marker
+      position={marker.location}
+      icon={customIcon}
+      eventHandlers={{ click: () => onClick(marker) }}
     />
   );
 });
 
 export default function AllMarkers({ users, onUserClick }: { users: UserProfile[], onUserClick: (u: UserProfile) => void }) {
+
+  const { events, handleJoinEvent, lastSignal, } = useAppState();
+  const map = useMap();
+
+  useEffect(() => {
+    if (lastSignal && lastSignal.location) {
+      // 1. Chuyển [lat, lng] thành tọa độ pixel {x, y} trên màn hình
+      const point = map.latLngToContainerPoint(lastSignal.location);
+
+      // 2. Chuyển đổi sang tỉ lệ 0 -> 1 cho confetti (vì confetti dùng % màn hình)
+      const container = map.getContainer();
+      const x = point.x / container.clientWidth;
+      const y = point.y / container.clientHeight;
+
+      // 3. Kích hoạt pháo hoa tại điểm đó
+      triggerFireworkAtPoint(x, y);
+    }
+  }, [lastSignal, map]);
+
   return (
     <>
       {users.map((user) => (
         <UserMarker key={user.id} marker={user} onClick={onUserClick} />
+      ))}
+
+      {events.map((event) => (
+        <Marker
+          key={event.id}
+          position={event.location}
+          icon={L.divIcon({
+            className: 'bg-none',
+            html: `
+        <div class="relative group">
+          <div class="w-12 h-12 bg-red-600 rounded-2xl rotate-45 flex items-center justify-center shadow-[0_0_20px_rgba(79,70,229,0.5)] border-2 border-yellow-500 animate-bounce">
+            <div class="-rotate-45 text-xl">
+              ${event.category === 'party' ? '🎉' : event.category === 'coffee' ? '☕' : '📚'}
+            </div>
+          </div>
+          <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap font-bold uppercase tracking-tighter">
+            ${event.title}
+          </div>
+        </div>
+      `,
+            iconSize: [48, 48],
+            iconAnchor: [24, 24],
+          })}
+          eventHandlers={{
+            /* click: () => onEventClick(event), */ // Hàm xử lý khi bấm vào sự kiện
+          }}
+        >
+          <Tooltip direction="top" offset={[0, -20]} opacity={1}>
+            <div className="p-2">
+              <h4 className="font-black text-slate-900">{event.title}</h4>
+              <p className="text-[10px] text-slate-500">{event.attendees.length} người tham gia</p>
+            </div>
+          </Tooltip>
+        </Marker>
       ))}
     </>
   );

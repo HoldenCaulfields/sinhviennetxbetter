@@ -6,6 +6,7 @@ import PersonaDetailModal from '@/components/Modals/PersonaDetailModal';
 import dynamic from "next/dynamic";
 import Loading from "./Loading";
 import EditProfileModal from './Modals/EditProfileModal';
+import CreateEventModal from './Modals/CreateEventModal';
 
 const MapLayer = dynamic(() => import('@/components/Map/MapLayer'), {
   ssr: false,
@@ -25,16 +26,17 @@ export default function App() {
     activeCategory, setActiveCategory,
     selectedUser, setSelectedUser,
     personaScore,
-    firestoreUsers, filteredUsers,
+    firestoreUsers, filteredUsers, handleBlastFirework, handleJoinEvent,
     handleToggleOption, handleAddCustomTag, handleRemoveCustomTag, handleUpdateProfile,
     handleOpenReview, handleConfirmSave, handleRecenter, handleResetDraft, handleUpdateAvatar,
+    handleCreateEvent, isEventModalOpen, setIsEventModalOpen,
   } = useAppState();
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-[#F1F5F9]">
-      
+
       {/* Map Layer - Handles background and markers */}
-      <MapLayer 
+      <MapLayer
         myProfile={myProfile}
         personaScore={personaScore}
         firestoreUsers={firestoreUsers} filteredUsers={filteredUsers}
@@ -45,7 +47,7 @@ export default function App() {
       />
 
       {/* UI Overlay - Handles timeline navigation, floating menus, filters, and HUD */}
-      <UIOverlay 
+      <UIOverlay
         viewMode={viewMode}
         setViewMode={setViewMode}
         discoveryMode={discoveryMode}
@@ -67,14 +69,17 @@ export default function App() {
         setSelectedUser={setSelectedUser}
         activeFilter={activeFilter}
         setActiveFilter={setActiveFilter}
+        handleBlastFirework={handleBlastFirework}
+        handleJoinEvent={handleJoinEvent}
+        setIsEventModalOpen={setIsEventModalOpen}
       />
 
       {/* Standalone Modals (outside UI hierarchy to prevent stacking context issues) */}
       {selectedUser && (
-        <PersonaDetailModal 
-          user={selectedUser} 
-          myScore={personaScore} 
-          onClose={() => setSelectedUser(null)} 
+        <PersonaDetailModal
+          user={selectedUser}
+          myScore={personaScore}
+          onClose={() => setSelectedUser(null)}
         />
       )}
 
@@ -84,6 +89,14 @@ export default function App() {
           profile={myProfile}
           onSave={handleUpdateProfile}
           onClose={() => setIsEditProfileOpen(false)}
+        />
+      )}
+
+      {isEventModalOpen && (
+        <CreateEventModal
+          userLocation={myProfile.location}
+          onClose={() => setIsEventModalOpen(false)}
+          onSave={handleCreateEvent}
         />
       )}
 

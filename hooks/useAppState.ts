@@ -1,11 +1,11 @@
 'use client';
 import { useState, useCallback, useMemo, useEffect } from 'react';
-import { UserProfile, Category, ScoreHistory, ViewMode, DiscoveryMode } from '@/types';
+import { UserProfile, Category, ScoreHistory, ViewMode, DiscoveryMode, MapEvent } from '@/types';
 import { calculatePersonaScore } from '@/utils';
 import { useProfiles } from "@/hooks/useProfiles";
 import { userMatchesFilter } from "@/lib/filtercategory";
 
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp, arrayUnion, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { auth } from "@/lib/firebase";
 
@@ -17,7 +17,11 @@ export function useAppState() {
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [centerTrigger, setCenterTrigger] = useState(0);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+
   const [activeFilter, setActiveFilter] = useState<string>('all');
+  const [events, setEvents] = useState<MapEvent[]>([]);
+  const [lastSignal, setLastSignal] = useState<{ location: [number, number], userId: string } | null>(null);
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
 
   const firestoreUsers = useProfiles();
 
@@ -133,6 +137,9 @@ export function useAppState() {
       return;
     }
 
+    // 1. Tự động lấy vị trí mới nhất ngay khi bấm lưu
+  handleRecenter();
+
     const uid = auth.currentUser.uid;
 
     const newHistoryEntry = {
@@ -162,6 +169,7 @@ export function useAppState() {
     );
 
     setIsReviewModalOpen(false);
+    setDiscoveryMode('map'); // Lưu xong thì tự động đẩy ra map
   }, [personaScore, myProfile]);
 
 
@@ -227,13 +235,106 @@ export function useAppState() {
     );
   }, [allUsers, activeFilter]);
 
+  // 1. Lắng nghe tín hiệu pháo hoa realtime
+  useEffect(() => {
+    const q = query(collection(db, "signals"), orderBy("timestamp", "desc"), limit(1));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      if (!snapshot.empty) {
+        const data = snapshot.docs[0].data();
+        // Chỉ cập nhật nếu signal này mới (trong vòng 5 giây qua)
+        if (data.timestamp && (Date.now() - data.timestamp.toMillis() < 5000)) {
+          setLastSignal({
+            location: data.location,
+            userId: data.userId
+          });
+        }
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // 2. Hàm bắn pháo hoa
+  const handleBlastFirework = async () => {
+    try {
+      const docRef = await addDoc(collection(db, "signals"), {
+        type: 'firework',
+        userId: myProfile.id,
+        userName: myProfile.name,
+        location: myProfile.location,
+        timestamp: serverTimestamp()
+      });
+
+      // Thời gian 10s là dư dả cho hiệu ứng Rocket (800ms) và nổ tung
+      setTimeout(async () => {
+        try {
+          await deleteDoc(docRef);
+          console.log("Dọn dẹp signal thành công");
+        } catch (err) {
+          console.error("Lỗi khi dọn dẹp signal:", err);
+        }
+      }, 20000);
+
+    } catch (error) {
+      console.error("Lỗi khi bắn pháo hoa:", error);
+    }
+  };
+
+  // 3. Tham gia sự kiện
+  const handleJoinEvent = async (eventId: string) => {
+    const eventRef = doc(db, "events", eventId);
+    await updateDoc(eventRef, {
+      attendees: arrayUnion(myProfile.id)
+    });
+  };
+
+  const handleCreateEvent = async (eventData: Partial<MapEvent>) => {
+    if (!auth.currentUser) return;
+
+    try {
+      const newEvent = {
+        ...eventData,
+        creatorId: auth.currentUser.uid,
+        attendees: [auth.currentUser.uid],
+        startTime: new Date().toISOString(),
+        createdAt: serverTimestamp(),
+      };
+
+      await addDoc(collection(db, "events"), newEvent);
+      setIsEventModalOpen(false);
+    } catch (error) {
+      console.error("Lỗi tạo sự kiện:", error);
+    }
+  };
+
+  //fetch events 
+  useEffect(() => {
+    // Tham chiếu đến collection 'events'
+    const eventsRef = collection(db, "events");
+
+    // Bạn có thể thêm điều kiện query (ví dụ: chỉ lấy sự kiện chưa diễn ra)
+    // const q = query(eventsRef, where("startTime", ">=", new Date().toISOString()));
+
+    const unsubscribe = onSnapshot(eventsRef, (snapshot) => {
+      const eventList = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as MapEvent[];
+
+      setEvents(eventList);
+    }, (error) => {
+      console.error("Lỗi khi lấy sự kiện:", error);
+    });
+
+    return () => unsubscribe(); // Hủy lắng nghe khi component unmount
+  }, []);
+
   return {
     viewMode,
     setViewMode,
     discoveryMode, setDiscoveryMode,
     isReviewModalOpen, setIsReviewModalOpen,
     isEditProfileOpen, setIsEditProfileOpen,
-    centerTrigger,
+    centerTrigger, handleBlastFirework, handleJoinEvent, events, lastSignal,
     myProfile,
     setMyProfile,
     activeCategory,
@@ -251,6 +352,7 @@ export function useAppState() {
     handleConfirmSave,
     handleResetDraft, handleUpdateAvatar,
     handleRecenter, handleUpdateProfile,
-    activeFilter, setActiveFilter, filteredUsers
+    activeFilter, setActiveFilter, filteredUsers,
+    handleCreateEvent, isEventModalOpen, setIsEventModalOpen,
   };
 }

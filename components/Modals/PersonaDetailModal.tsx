@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { 
   X, Heart, Hash, Share2, Sparkles, MapPin, 
   Facebook, Instagram, Youtube, Link2, Clock, Info
@@ -67,7 +67,7 @@ const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, 
           <div className="relative z-10 flex items-center gap-5">
             <div className="relative shrink-0">
               <div className="absolute inset-0 bg-white/20 rounded-3xl rotate-6" />
-              <img src={user.avatar} className="w-20 h-20 sm:w-24 sm:h-24 relative rounded-[1.8rem] border-4 border-white/30 object-cover shadow-xl" alt="" />
+              <img src={user.avatar || '/tet.jpg'} className="w-20 h-20 sm:w-24 sm:h-24 relative rounded-[1.8rem] border-4 border-white/30 object-cover shadow-xl" alt="" />
               {user.isPinned && (
                 <div className="absolute -top-2 -left-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
                   <span className="text-xs">📌</span>

@@ -23,7 +23,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = ({ user, myScore, onOpenEdit }
   return (
     <div className="relative flex items-center justify-center z-[5000]">
       
-      {/* 1. Hào quang (Glow) - Làm đậm thêm bằng opacity 0.6 và blur rộng */}
+      {/* 1. Hào quang (Glow) - Làm đậm thêm bằng opacity 0.6 và blur rộng
       <div 
         className={`absolute rounded-full blur-3xl transition-all duration-1000 animate-soft-pulse ${
           isFunDominant ? 'bg-red-500/60' : 'bg-blue-500/60'
@@ -33,7 +33,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = ({ user, myScore, onOpenEdit }
             height: radius * 3.5,
             opacity: 0.7 
         }} 
-      />
+      />  */}
 
       {/* 2. Container chính */}
       <div className="relative flex items-center justify-center animate-float pointer-events-auto">
