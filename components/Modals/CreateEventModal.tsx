@@ -69,9 +69,9 @@ export default function CreateEventModal({
           <div className="flex justify-between items-center mb-8">
             <div>
               <h2 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight">
-                TẠO SỰ KIỆN
+                TẠO CUỘC HẸN MỚI
               </h2>
-              <p className="text-slate-500 text-sm font-medium">Chia sẻ khoảnh khắc cùng mọi người</p>
+              <p className="text-slate-500 text-sm font-medium">Kết nối mọi người gần nhau hơn</p>
             </div>
 
             <button
@@ -86,7 +86,7 @@ export default function CreateEventModal({
             {/* Title Input */}
             <div className="group">
               <label className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1">
-                <Type size={14} /> Tên sự kiện
+                <Type size={14} /> Tên cuộc hẹn
               </label>
               <input
                 value={title}
@@ -106,7 +106,7 @@ export default function CreateEventModal({
                 onChange={e => setDescription(e.target.value)}
                 rows={3}
                 className="w-full px-5 py-4 bg-slate-50 border-2 border-transparent focus:border-indigo-500 focus:bg-white outline-none rounded-2xl transition-all font-medium resize-none"
-                placeholder="Thêm một vài thông tin thú vị..."
+                placeholder="Thêm mô tả cho cuộc hẹn, địa điểm..."
               />
             </div>
 
@@ -126,7 +126,7 @@ export default function CreateEventModal({
 
               <div>
                 <label className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 ml-1 block">
-                  Loại hình
+                  Loại hình (giao lưu / cafe / học nhóm)
                 </label>
                 <div className="flex gap-2">
                   {(['party', 'coffee', 'study'] as const).map(type => (

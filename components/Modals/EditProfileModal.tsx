@@ -1,9 +1,9 @@
 'use client';
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, Camera, User, Globe, Send, Save, 
-  Sparkles, Check, Facebook, Instagram, Youtube 
+import {
+  X, Camera, User, Globe, Send, Save,
+  Sparkles, Check, Facebook, Instagram, Youtube
 } from 'lucide-react';
 import { UserProfile } from '@/types';
 import { uploadToCloudinary } from "@/lib/uploadToCloudinary";
@@ -55,21 +55,21 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ profile, onSave, on
   return (
     <div className="fixed inset-0 z-[7000] flex items-end sm:items-center justify-center overflow-hidden p-0 sm:p-6">
       {/* Backdrop */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="absolute inset-0 bg-slate-950/60 backdrop-blur-xl" 
-        onClick={onClose} 
+        className="absolute inset-0 bg-slate-950/60 backdrop-blur-xl"
+        onClick={onClose}
       />
-      
+
       {/* Modal Container */}
-      <motion.div 
+      <motion.div
         initial={{ y: "100%", opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: "100%", opacity: 0 }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
-        
+
         // --- DRAG TO DISMISS LOGIC ---
         drag="y"
         dragConstraints={{ top: 0 }}
@@ -95,8 +95,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ profile, onSave, on
               </div>
               <h2 className="text-base sm:text-lg font-black text-slate-900 uppercase tracking-tighter">Sửa Hồ Sơ</h2>
             </div>
-            <button 
-              onClick={onClose} 
+            <button
+              onClick={onClose}
               className="w-9 h-9 flex items-center justify-center bg-slate-50 hover:bg-slate-100 rounded-full transition-all active:scale-90"
             >
               <X size={18} className="text-slate-500" />
@@ -106,14 +106,14 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ profile, onSave, on
 
         {/* Body - Nội dung cuộn */}
         {/* Thêm stopPropagation để khi cuộn nội dung không kích hoạt hành động kéo modal */}
-        <div 
-          onPointerDown={(e) => e.stopPropagation()} 
+        <div
+          onPointerDown={(e) => e.stopPropagation()}
           className="flex-1 overflow-y-auto px-6 py-6 sm:px-8 space-y-8 scrollbar-hide touch-auto"
         >
-          
+
           {/* Avatar Edit */}
           <div className="flex flex-col items-center py-2">
-            <div 
+            <div
               onClick={() => fileInputRef.current?.click()}
               className="group relative w-24 h-24 sm:w-32 sm:h-32 bg-slate-100 rounded-[2rem] sm:rounded-[2.5rem] p-1 cursor-pointer transition-transform hover:scale-105 active:scale-95 shadow-inner"
             >
@@ -134,57 +134,59 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ profile, onSave, on
 
           <div className="space-y-6">
             <div className="space-y-3">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Định danh</span>
-              <input 
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Thay đổi tên:</span>
+              <input
                 value={formData.name}
-                onChange={e => setFormData(p => ({...p, name: e.target.value}))}
+                onChange={e => setFormData(p => ({ ...p, name: e.target.value }))}
                 placeholder="Tên của bạn"
                 className="w-full px-5 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-800 outline-none transition-all focus:border-indigo-500/30 focus:bg-white"
               />
-              <textarea 
+
+              <div className="space-y-3">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Thêm Mạng xã hội:</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {[
+                    { icon: <Facebook size={16} />, key: 'facebook', label: 'FB URL', color: 'text-blue-600' },
+                    { icon: <Instagram size={16} />, key: 'instagram', label: 'Insta @', color: 'text-rose-500' },
+                    { icon: <Youtube size={16} />, key: 'youtube', label: 'YT Link', color: 'text-red-600' },
+                    { icon: <Send size={16} />, key: 'zalo', label: 'Zalo #', color: 'text-cyan-600' },
+                  ].map((item) => (
+                    <div key={item.key} className="flex items-center bg-slate-50 border border-slate-100 rounded-xl p-1 focus-within:bg-white focus-within:ring-2 ring-slate-100 transition-all">
+                      <div className={`w-8 h-8 flex items-center justify-center rounded-lg ${item.color} bg-white shadow-sm shrink-0`}>
+                        {item.icon}
+                      </div>
+                      <input
+                        value={(formData.socialLinks as any)[item.key]}
+                        onChange={e => handleSocialChange(item.key, e.target.value)}
+                        placeholder={item.label}
+                        className="flex-1 bg-transparent px-2 text-md font-bold outline-none"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Chi tiết hơn:</span>
+              <textarea
                 value={formData.bio}
-                onChange={e => setFormData(p => ({...p, bio: e.target.value}))}
-                placeholder="Vibe của bạn là gì?"
+                onChange={e => setFormData(p => ({ ...p, bio: e.target.value }))}
+                placeholder="Bạn là người thế nào?"
                 className="w-full px-5 py-3.5 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-800 outline-none transition-all focus:border-indigo-500/30 focus:bg-white h-24 resize-none text-sm leading-relaxed"
               />
-            </div>
-
-            <div className="space-y-3">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Mạng xã hội</span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {[
-                  { icon: <Facebook size={16} />, key: 'facebook', label: 'FB URL', color: 'text-blue-600' },
-                  { icon: <Instagram size={16} />, key: 'instagram', label: 'Insta @', color: 'text-rose-500' },
-                  { icon: <Youtube size={16} />, key: 'youtube', label: 'YT Link', color: 'text-red-600' },
-                  { icon: <Send size={16} />, key: 'zalo', label: 'Zalo #', color: 'text-cyan-600' },
-                ].map((item) => (
-                  <div key={item.key} className="flex items-center bg-slate-50 border border-slate-100 rounded-xl p-1 focus-within:bg-white focus-within:ring-2 ring-slate-100 transition-all">
-                    <div className={`w-8 h-8 flex items-center justify-center rounded-lg ${item.color} bg-white shadow-sm shrink-0`}>
-                      {item.icon}
-                    </div>
-                    <input 
-                      value={(formData.socialLinks as any)[item.key]}
-                      onChange={e => handleSocialChange(item.key, e.target.value)}
-                      placeholder={item.label}
-                      className="flex-1 bg-transparent px-2 text-xs font-bold outline-none"
-                    />
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </div>
 
         {/* Footer */}
         <div className="p-5 sm:p-6 bg-white border-t border-slate-50 flex gap-3 shrink-0 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:pb-6">
-          <button 
+          <button
             type="button"
             onClick={onClose}
             className="flex-1 py-3.5 rounded-xl font-black text-[10px] uppercase tracking-widest text-slate-400 border border-slate-100 active:scale-95 transition-all bg-slate-50"
           >
             Hủy
           </button>
-          <button 
+          <button
             onClick={(e) => { e.preventDefault(); onSave(formData); onClose(); }}
             disabled={uploading}
             className="flex-[1.5] py-3.5 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-slate-200 active:scale-95 transition-all hover:bg-slate-800 disabled:opacity-50 flex items-center justify-center gap-2"

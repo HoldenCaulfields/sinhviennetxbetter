@@ -92,7 +92,7 @@ const CustomMarker: React.FC<CustomMarkerProps> = ({ user, myScore, onOpenEdit }
            <div className={`px-4 py-1 rounded-full text-[10px] font-black text-white shadow-2xl whitespace-nowrap border-2 transition-all bg-slate-900
               border-slate-400 text-white
            }`}>
-             {user.name.toUpperCase()}
+             {user.name}
            </div>
         </div>
 

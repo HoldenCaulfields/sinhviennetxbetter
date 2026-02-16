@@ -28,7 +28,7 @@ export function useAppState() {
 
   const [myProfile, setMyProfile] = useState<UserProfile>({
     id: 'me',
-    name: 'Bạn',
+    name: 'Bạn (đổi tên)',
     avatar: '/tet.jpg',
     location: INITIAL_LOCATION,
     selectedOptions: ['m1', 'l1'],
