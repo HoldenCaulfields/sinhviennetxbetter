@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import Loading from "./Loading";
 import EditProfileModal from './Modals/EditProfileModal';
 import CreateEventModal from './Modals/CreateEventModal';
+import EventModal from './Modals/EventModal';
 
 const MapLayer = dynamic(() => import('@/components/Map/MapLayer'), {
   ssr: false,
@@ -30,6 +31,7 @@ export default function App() {
     handleToggleOption, handleAddCustomTag, handleRemoveCustomTag, handleUpdateProfile,
     handleOpenReview, handleConfirmSave, handleRecenter, handleResetDraft, handleUpdateAvatar,
     handleCreateEvent, isEventModalOpen, setIsEventModalOpen,
+    selectedEvent, setSelectedEvent, onEventClick, events,
   } = useAppState();
 
   return (
@@ -44,6 +46,7 @@ export default function App() {
         centerTrigger={centerTrigger}
         onUserClick={setSelectedUser}
         onOpenEdit={() => setIsEditProfileOpen(true)}
+        events={events} onEventClick={onEventClick}
       />
 
       {/* UI Overlay - Handles timeline navigation, floating menus, filters, and HUD */}
@@ -99,6 +102,13 @@ export default function App() {
           onSave={handleCreateEvent}
         />
       )}
+
+      {selectedEvent && (
+  <EventModal
+    event={selectedEvent}
+    onClose={() => setSelectedEvent(null)}
+  />
+)}
 
       {/* Global Style / Animations */}
       <style>{`

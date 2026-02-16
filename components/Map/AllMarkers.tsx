@@ -2,7 +2,7 @@
 import { Marker, Tooltip } from "react-leaflet";
 import { memo, useMemo, useEffect } from "react";
 import L from "leaflet";
-import { UserProfile } from "@/types";
+import { MapEvent, UserProfile } from "@/types";
 import { useAppState } from "@/hooks/useAppState";
 import { triggerFireworkAtPoint } from "@/utils";
 import { useMap } from 'react-leaflet';
@@ -58,9 +58,18 @@ const UserMarker = memo(({ marker, onClick }: { marker: UserProfile; onClick: (m
   );
 });
 
-export default function AllMarkers({ users, onUserClick }: { users: UserProfile[], onUserClick: (u: UserProfile) => void }) {
-
-  const { events, handleJoinEvent, lastSignal, } = useAppState();
+export default function AllMarkers({
+  users,
+  events,
+  onUserClick,
+  onEventClick
+}: {
+  users: UserProfile[]
+  events: MapEvent[]
+  onUserClick: (u: UserProfile) => void
+  onEventClick: (event: MapEvent) => void
+}) {
+  const { lastSignal } = useAppState();
   const map = useMap();
 
   useEffect(() => {
@@ -77,6 +86,7 @@ export default function AllMarkers({ users, onUserClick }: { users: UserProfile[
       triggerFireworkAtPoint(x, y);
     }
   }, [lastSignal, map]);
+
 
   return (
     <>
@@ -97,24 +107,15 @@ export default function AllMarkers({ users, onUserClick }: { users: UserProfile[
               ${event.category === 'party' ? '🎉' : event.category === 'coffee' ? '☕' : '📚'}
             </div>
           </div>
-          <div class="absolute -bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] px-2 py-1 rounded whitespace-nowrap font-bold uppercase tracking-tighter">
-            ${event.title}
-          </div>
         </div>
       `,
             iconSize: [48, 48],
             iconAnchor: [24, 24],
           })}
           eventHandlers={{
-            /* click: () => onEventClick(event), */ // Hàm xử lý khi bấm vào sự kiện
+            click: () => onEventClick(event)
           }}
         >
-          <Tooltip direction="top" offset={[0, -20]} opacity={1}>
-            <div className="p-2">
-              <h4 className="font-black text-slate-900">{event.title}</h4>
-              <p className="text-[10px] text-slate-500">{event.attendees.length} người tham gia</p>
-            </div>
-          </Tooltip>
         </Marker>
       ))}
     </>

@@ -2,7 +2,7 @@
 import React, { useEffect } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import CustomMarker from './CustomMarker';
-import { UserProfile, PersonaScore, DiscoveryMode } from '@/types';
+import { UserProfile, PersonaScore, DiscoveryMode, MapEvent } from '@/types';
 import AllMarkers from './AllMarkers';
 
 interface MapLayerProps {
@@ -13,6 +13,8 @@ interface MapLayerProps {
   centerTrigger: number;
   onUserClick: (user: UserProfile) => void;
   onOpenEdit: () => void;
+  events: MapEvent[];
+  onEventClick: (event: MapEvent) => void
 }
 
 const MapController: React.FC<{ location: [number, number], trigger: number }> = ({ location, trigger }) => {
@@ -36,6 +38,7 @@ const MapLayer: React.FC<MapLayerProps> = ({
   discoveryMode,
   centerTrigger,
   onUserClick, onOpenEdit,
+  events, onEventClick
 }) => {
   const isSelfMode = discoveryMode === 'self';
 
@@ -57,7 +60,7 @@ const MapLayer: React.FC<MapLayerProps> = ({
         />
         <MapController location={myProfile.location} trigger={centerTrigger} />
 
-        <AllMarkers users={filteredUsers} onUserClick={onUserClick} />
+        <AllMarkers users={filteredUsers} onUserClick={onUserClick} events={events} onEventClick={onEventClick} />
 
       </MapContainer>
 

@@ -49,13 +49,6 @@ const CreateEventModal: React.FC<CreateEventModalProps> = ({ userLocation, onSav
                 ))}
               </div>
             </div>
-
-            <div className="bg-slate-50 p-4 rounded-2xl flex items-center gap-3">
-              <MapPin className="text-indigo-500" size={20} />
-              <div className="text-[10px] font-bold text-slate-500">
-                Vị trí: {userLocation[0].toFixed(4)}, {userLocation[1].toFixed(4)}
-              </div>
-            </div>
           </div>
 
           <button

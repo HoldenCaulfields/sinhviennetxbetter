@@ -22,6 +22,7 @@ export function useAppState() {
   const [events, setEvents] = useState<MapEvent[]>([]);
   const [lastSignal, setLastSignal] = useState<{ location: [number, number], userId: string } | null>(null);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<MapEvent | null>(null);
 
   const firestoreUsers = useProfiles();
 
@@ -328,6 +329,10 @@ export function useAppState() {
     return () => unsubscribe(); // Hủy lắng nghe khi component unmount
   }, []);
 
+  const onEventClick = useCallback((event: MapEvent) => {
+  setSelectedEvent(event);
+}, []);
+
   return {
     viewMode,
     setViewMode,
@@ -354,5 +359,6 @@ export function useAppState() {
     handleRecenter, handleUpdateProfile,
     activeFilter, setActiveFilter, filteredUsers,
     handleCreateEvent, isEventModalOpen, setIsEventModalOpen,
+    selectedEvent, setSelectedEvent, onEventClick
   };
 }
