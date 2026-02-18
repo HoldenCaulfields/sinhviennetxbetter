@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import { X, Check, Plus, Hash } from 'lucide-react';
-import { Category } from '../../types';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Category } from '@/types';
+import { motion } from 'framer-motion';
 
 interface SubFilterModalProps {
   category: Category;
@@ -120,7 +120,7 @@ const SubFilterModal: React.FC<SubFilterModalProps> = ({
             {/* Custom Tags */}
             <div>
               <label className="text-[10px] font-black uppercase text-slate-400 mb-4 block ml-1 tracking-widest">
-                Thêm Tag Riêng
+                Thêm Tags Riêng
               </label>
               <form onSubmit={handleAddTag} className="relative mb-4">
                 <input 

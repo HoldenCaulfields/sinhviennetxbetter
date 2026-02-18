@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { CATEGORIES } from '../../constants';
-import { CategoryGroup, Category } from '../../types';
+import { CATEGORIES } from '@/constants';
+import { CategoryGroup, Category } from '@/types';
 
 interface FilterBarProps {
   group: CategoryGroup;

@@ -15,6 +15,8 @@ export interface Category {
   icon: any;
   color: string;
   subOptions: SubOption[];
+  interestScore?: number;
+  interestPercent?: number;
 }
 
 export interface ScoreHistory {

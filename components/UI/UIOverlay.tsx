@@ -38,6 +38,7 @@ interface UIOverlayProps {
   handleBlastFirework: () => void;
   handleJoinEvent: (eventId: string) => void;
   setIsEventModalOpen: (open: boolean) => void;
+  sortedCategories: Category[];
 }
 
 const UIOverlay: React.FC<UIOverlayProps> = ({
@@ -50,6 +51,7 @@ const UIOverlay: React.FC<UIOverlayProps> = ({
   handleOpenReview, handleConfirmSave, handleRecenter, handleResetDraft,
   setSelectedUser, activeFilter, setActiveFilter,
   handleBlastFirework, handleJoinEvent, setIsEventModalOpen,
+  sortedCategories,
 }) => {
   const isSelfMode = discoveryMode === 'self';
 
@@ -176,7 +178,7 @@ const UIOverlay: React.FC<UIOverlayProps> = ({
             ) : (
               /* CHẾ ĐỘ MAP: Chỉ hiện Filter Marker tìm người */
               <div className="mt-24 pointer-events-auto animate-in fade-in slide-in-from-right-10">
-                <FilterMarker activeFilter={activeFilter} onFilterChange={setActiveFilter} />
+                <FilterMarker activeFilter={activeFilter} onFilterChange={setActiveFilter} categories={sortedCategories}/>
               </div>
             )}
           </div>

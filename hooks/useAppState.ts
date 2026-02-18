@@ -8,6 +8,7 @@ import { userMatchesFilter } from "@/lib/filtercategory";
 import { doc, setDoc, collection, onSnapshot, query, orderBy, limit, addDoc, serverTimestamp, arrayUnion, updateDoc, deleteDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { auth } from "@/lib/firebase";
+import { getCategoryInterestScore, sortCategoriesByInterest } from '@/lib/interest';
 
 const INITIAL_LOCATION: [number, number] = [10.762622, 106.660172];
 
@@ -333,6 +334,27 @@ export function useAppState() {
   setSelectedEvent(event);
 }, []);
 
+//filter marker category by interest score 
+const sortedCategories = useMemo(() => {
+  const scored = getCategoryInterestScore(myProfile.selectedOptions)
+
+  // nếu user chưa chọn gì → thêm all = 100%
+  const totalSelected = myProfile.selectedOptions.length
+
+  const withAll = [
+    {
+      id: "all",
+      label: "Tất cả",
+      icon: "🌍",
+      interestScore: totalSelected === 0 ? 1 : 0,
+      interestPercent: totalSelected === 0 ? 1 : 0,
+    },
+    ...scored,
+  ]
+
+  return sortCategoriesByInterest(withAll)
+}, [myProfile.selectedOptions])
+
   return {
     viewMode,
     setViewMode,
@@ -359,6 +381,7 @@ export function useAppState() {
     handleRecenter, handleUpdateProfile,
     activeFilter, setActiveFilter, filteredUsers,
     handleCreateEvent, isEventModalOpen, setIsEventModalOpen,
-    selectedEvent, setSelectedEvent, onEventClick
+    selectedEvent, setSelectedEvent, onEventClick,
+    sortedCategories,
   };
 }

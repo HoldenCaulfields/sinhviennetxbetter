@@ -32,6 +32,7 @@ export default function App() {
     handleOpenReview, handleConfirmSave, handleRecenter, handleResetDraft, handleUpdateAvatar,
     handleCreateEvent, isEventModalOpen, setIsEventModalOpen,
     selectedEvent, setSelectedEvent, onEventClick, events,
+    sortedCategories,
   } = useAppState();
 
   return (
@@ -75,6 +76,7 @@ export default function App() {
         handleBlastFirework={handleBlastFirework}
         handleJoinEvent={handleJoinEvent}
         setIsEventModalOpen={setIsEventModalOpen}
+        sortedCategories={sortedCategories}
       />
 
       {/* Standalone Modals (outside UI hierarchy to prevent stacking context issues) */}
