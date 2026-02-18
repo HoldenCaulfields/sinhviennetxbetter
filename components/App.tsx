@@ -105,11 +105,11 @@ export default function App() {
       )}
 
       {selectedEvent && (
-  <EventModal
-    event={selectedEvent}
-    onClose={() => setSelectedEvent(null)}
-  />
-)}
+        <EventModal
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+        />
+      )}
 
       {/* Global Style / Animations */}
       <style>{`

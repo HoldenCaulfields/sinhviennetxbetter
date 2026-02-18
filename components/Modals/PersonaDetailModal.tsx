@@ -105,15 +105,7 @@ const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, 
         {/* Body Content */}
         <div className="px-6 py-6 sm:px-10 overflow-y-auto scrollbar-hide flex-1 space-y-7 touch-auto">
 
-          {/* Bio Section */}
-          {user.bio && (
-            <div className="relative p-5 bg-slate-50 rounded-[2rem] border border-slate-100">
-              <div className="absolute -top-3 left-6 px-3 py-1 bg-white border border-slate-100 rounded-full text-[9px] font-black text-slate-400 uppercase tracking-tighter">Bio</div>
-              <p className="text-slate-600 text-sm font-medium leading-relaxed italic italic-quote">
-                "{user.bio}"
-              </p>
-            </div>
-          )}
+          
 
           {/* Stats & Compatibility */}
           <div className="grid grid-cols-2 gap-3">
@@ -172,10 +164,20 @@ const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, 
             </div>
           )}
 
+          {/* Bio Section */}
+          {user.bio && (
+            <div className="relative p-5 bg-slate-50 rounded-[2rem] border border-slate-100">
+              <div className="absolute -top-3 left-6 px-3 py-1 bg-white border border-slate-100 rounded-full text-[9px] font-black text-slate-400 uppercase tracking-tighter">Bio</div>
+              <p className="text-slate-600 text-sm font-medium leading-relaxed italic italic-quote">
+                "{user.bio}"
+              </p>
+            </div>
+          )}
+
           {/* Tags */}
           <div className="space-y-3">
             <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] flex items-center gap-2">
-              <Hash size={14} /> HashTags đã thêm
+              <Hash size={14} /> Tags
             </h4>
             <div className="flex flex-wrap gap-2">
               {user.customTags.map((t, i) => (

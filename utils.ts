@@ -141,3 +141,31 @@ export function calculateDistance(
 
   return (R * c).toFixed(1); // km
 }
+
+//calculate % of fun and study
+export const getAnalysis = (fun: number, study: number) => {
+  const diff = fun - study;
+  if (Math.abs(diff) <= 10) return "Sự cân bằng tuyệt vời. Bạn đang làm chủ được cả lý trí lẫn tâm hồn.";
+  if (fun > study && fun > 70) return "Năng lượng sáng tạo đang bùng nổ.";
+  if (study > fun && study > 70) return "Sự tập trung cao độ. Bạn đang tiến bộ rất nhanh trong việc tích lũy tri thức.";
+  if (fun < 30 && study < 30) return "Có vẻ bạn đang trong giai đoạn nghỉ ngơi. Hãy nạp lại năng lượng để bắt đầu hành trình mới.";
+  return "Bạn đang dần tìm thấy sự tĩnh lặng trong những cuộc vui.";
+};
+
+const chartWidth = 500;
+const chartHeight = 200;
+const centerY = chartHeight / 2; // Đường 0 nằm ở giữa
+
+export const generateBalancePath = (data: any[]) => {
+  if (data.length < 2) return "";
+  
+  return data.map((entry, i) => {
+    const x = (i / (data.length - 1)) * (chartWidth - 40) + 20;
+    // Tính toán độ lệch: (Fun - Study) / 2 
+    // Ví dụ: Fun 100%, Study 0% => Lệch +50. Fun 0%, Study 100% => Lệch -50.
+    const diff = (entry.score.fun - entry.score.study) / 2;
+    // Chuyển đổi diff thành tọa độ Y (Y càng nhỏ càng nằm cao trên SVG)
+    const y = centerY - (diff * (chartHeight / 120)); 
+    return `${i === 0 ? 'M' : 'L'} ${x} ${y}`;
+  }).join(' ');
+};
