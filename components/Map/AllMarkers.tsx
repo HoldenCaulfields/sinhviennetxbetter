@@ -1,5 +1,5 @@
 'use client';
-import { Marker, Tooltip } from "react-leaflet";
+import { Marker } from "react-leaflet";
 import { memo, useMemo, useEffect } from "react";
 import L from "leaflet";
 import { MapEvent, UserProfile } from "@/types";

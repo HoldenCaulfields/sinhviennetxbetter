@@ -32,7 +32,7 @@ export default function App() {
     handleOpenReview, handleConfirmSave, handleRecenter, handleResetDraft, handleUpdateAvatar,
     handleCreateEvent, isEventModalOpen, setIsEventModalOpen,
     selectedEvent, setSelectedEvent, onEventClick, events,
-    sortedCategories,
+    sortedCategories, mapLocation,
   } = useAppState();
 
   return (
@@ -48,6 +48,7 @@ export default function App() {
         onUserClick={setSelectedUser}
         onOpenEdit={() => setIsEditProfileOpen(true)}
         events={events} onEventClick={onEventClick}
+        mapLocation={mapLocation}
       />
 
       {/* UI Overlay - Handles timeline navigation, floating menus, filters, and HUD */}

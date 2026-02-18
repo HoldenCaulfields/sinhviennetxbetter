@@ -39,8 +39,9 @@ const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, 
     if (!links) return null;
     const icons = [
       { id: 'facebook', icon: <Facebook size={18} />, link: links.facebook, color: 'hover:bg-blue-500' },
-      { id: 'instagram', icon: <Instagram size={18} />, link: links.instagram, color: 'hover:bg-pink-500' },
-      { id: 'tiktok', icon: <span className="font-bold text-[10px]">TT</span>, link: links.tiktok, color: 'hover:bg-black' },
+      { id: 'instagram', icon: <Instagram size={18} />, link: links.instagram, color: 'hover:bg-rose-500' },
+      { id: 'youtube', icon: <Youtube size={18} />, link: links.youtube, color: 'hover:bg-red-500' },
+      { id: 'tiktok', icon: <span className="font-bold text-[10px]">Tiktok</span>, link: links.tiktok, color: 'hover:bg-black' },
       { id: 'zalo', icon: <span className="font-bold text-[10px]">Zalo</span>, link: links.zalo, color: 'hover:bg-blue-400' },
     ].filter(item => item.link);
 

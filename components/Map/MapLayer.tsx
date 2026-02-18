@@ -14,7 +14,8 @@ interface MapLayerProps {
   onUserClick: (user: UserProfile) => void;
   onOpenEdit: () => void;
   events: MapEvent[];
-  onEventClick: (event: MapEvent) => void
+  onEventClick: (event: MapEvent) => void;
+  mapLocation: [number, number];
 }
 
 const MapController: React.FC<{ location: [number, number], trigger: number }> = ({ location, trigger }) => {
@@ -22,7 +23,7 @@ const MapController: React.FC<{ location: [number, number], trigger: number }> =
 
   useEffect(() => {
     if (trigger > 0) {
-      map.flyTo(location as any, 14, { duration: 1.5 });
+      map.setView(location, 14, { animate: true });
     }
   }, [trigger, location, map]);
 
@@ -38,7 +39,7 @@ const MapLayer: React.FC<MapLayerProps> = ({
   discoveryMode,
   centerTrigger,
   onUserClick, onOpenEdit,
-  events, onEventClick
+  events, onEventClick, mapLocation
 }) => {
   const isSelfMode = discoveryMode === 'self';
 
@@ -58,7 +59,7 @@ const MapLayer: React.FC<MapLayerProps> = ({
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           attribution=' &copy; <a href="https://carto.com/">CARTO</a>'
         />
-        <MapController location={myProfile.location} trigger={centerTrigger} />
+        <MapController location={mapLocation} trigger={centerTrigger} />
 
         <AllMarkers users={filteredUsers} onUserClick={onUserClick} events={events} onEventClick={onEventClick} />
 

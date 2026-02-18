@@ -16,8 +16,11 @@ export function useAppState() {
   const [viewMode, setViewMode] = useState<ViewMode>('present');
   const [discoveryMode, setDiscoveryMode] = useState<DiscoveryMode>('self');
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+
   const [centerTrigger, setCenterTrigger] = useState(0);
+  const [mapLocation, setMapLocation] = useState<[number, number]>(INITIAL_LOCATION);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+
 
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [events, setEvents] = useState<MapEvent[]>([]);
@@ -96,41 +99,54 @@ export function useAppState() {
 
   const handleOpenReview = () => setIsReviewModalOpen(true);
 
-  const handleRecenter = useCallback(() => {
-    if (!("geolocation" in navigator)) {
-      alert("Trình duyệt của bạn không hỗ trợ định vị.");
-      return;
-    }
+  //get user location
+  const getCurrentLocation = (): Promise<[number, number]> => {
+    return new Promise((resolve, reject) => {
+      if (!("geolocation" in navigator)) {
+        reject(new Error("Browser không hỗ trợ định vị"));
+        return;
+      }
 
-    // Cấu hình option dành riêng cho iOS
-    const geoOptions = {
-      enableHighAccuracy: true,
-      timeout: 10000, // Tăng lên 10s vì GPS iPhone cần thời gian khởi động
-      maximumAge: 0
-    };
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setMyProfile(prev => ({ ...prev, location: [latitude, longitude] }));
-        setCenterTrigger(prev => prev + 1);
-      },
-      (error) => {
-        // Xử lý các mã lỗi đặc trưng của Safari
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            alert("Safari đã chặn quyền truy cập vị trí. Bạn hãy làm theo hướng dẫn bên dưới để mở lại nhé!");
-            break;
-          case error.POSITION_UNAVAILABLE:
-            alert("Không thể xác định vị trí. Hãy kiểm tra xem bạn đã bật GPS (Dịch vụ định vị) trong cài đặt máy chưa.");
-            break;
-          case error.TIMEOUT:
-            alert("Yêu cầu định vị quá hạn. Hãy thử lại lần nữa.");
-            break;
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          resolve([
+            pos.coords.latitude,
+            pos.coords.longitude
+          ]);
+        },
+        (error) => reject(error),
+        {
+          enableHighAccuracy: false, // mượt hơn mobile
+          timeout: 10000,
+          maximumAge: 0
         }
-      },
-      geoOptions
-    );
+      );
+    });
+  };
+
+  const handleRecenter = useCallback(async () => {
+    try {
+      const location = await getCurrentLocation();
+
+      // chỉ update map
+      setMapLocation(location);
+      setCenterTrigger(prev => prev + 1);
+
+    } catch (error: any) {
+      switch (error.code) {
+        case error.PERMISSION_DENIED:
+          alert("Safari đã chặn quyền truy cập vị trí.");
+          break;
+        case error.POSITION_UNAVAILABLE:
+          alert("Không thể xác định vị trí.");
+          break;
+        case error.TIMEOUT:
+          alert("Yêu cầu định vị quá hạn.");
+          break;
+        default:
+          alert("Không lấy được vị trí.");
+      }
+    }
   }, []);
 
   const handleConfirmSave = useCallback(async () => {
@@ -139,41 +155,55 @@ export function useAppState() {
       return;
     }
 
-    // 1. Tự động lấy vị trí mới nhất ngay khi bấm lưu
-  handleRecenter();
+    try {
+      // ⭐ LẤY GPS MỚI NHẤT (không dùng handleRecenter)
+      const location = await getCurrentLocation();
 
-    const uid = auth.currentUser.uid;
+      const uid = auth.currentUser.uid;
 
-    const newHistoryEntry = {
-      date: new Date().toISOString(),
-      score: personaScore
-    };
+      const newHistoryEntry = {
+        date: new Date().toISOString(),
+        score: personaScore
+      };
 
-    const updatedProfile = {
-      ...myProfile,
-      id: uid, // ⭐ sync id luôn
-      isPinned: true,
-      history: [...myProfile.history, newHistoryEntry]
-    };
+      const updatedProfile = {
+        ...myProfile,
+        id: uid,
+        isPinned: true,
+        location, // ⭐ lưu vị trí thật
+        history: [...myProfile.history, newHistoryEntry]
+      };
 
-    setMyProfile(updatedProfile);
+      // update local state
+      setMyProfile(updatedProfile);
 
-    localStorage.setItem(
-      "syncmap_profile_v2",
-      JSON.stringify(updatedProfile)
-    );
+      // localStorage
+      localStorage.setItem(
+        "syncmap_profile_v2",
+        JSON.stringify(updatedProfile)
+      );
 
-    // ⭐ firestore
-    await setDoc(
-      doc(db, "profiles", uid),
-      updatedProfile,
-      { merge: true }
-    );
+      // firestore
+      await setDoc(
+        doc(db, "profiles", uid),
+        updatedProfile,
+        { merge: true }
+      );
 
-    setIsReviewModalOpen(false);
-    setDiscoveryMode('map'); // Lưu xong thì tự động đẩy ra map
+      // UX
+      setIsReviewModalOpen(false);
+      setDiscoveryMode("map");
+
+      // ⭐ bay map tới vị trí vừa save
+      setMapLocation(location);
+      setCenterTrigger(prev => prev + 1);
+
+    } catch (err) {
+      console.error(err);
+      alert("Không lấy được vị trí để lưu.");
+    }
+
   }, [personaScore, myProfile]);
-
 
   const handleResetDraft = () => {
     setMyProfile(prev => ({ ...prev, isPinned: false }));
@@ -331,29 +361,29 @@ export function useAppState() {
   }, []);
 
   const onEventClick = useCallback((event: MapEvent) => {
-  setSelectedEvent(event);
-}, []);
+    setSelectedEvent(event);
+  }, []);
 
-//filter marker category by interest score 
-const sortedCategories = useMemo(() => {
-  const scored = getCategoryInterestScore(myProfile.selectedOptions)
+  //filter marker category by interest score 
+  const sortedCategories = useMemo(() => {
+    const scored = getCategoryInterestScore(myProfile.selectedOptions)
 
-  // nếu user chưa chọn gì → thêm all = 100%
-  const totalSelected = myProfile.selectedOptions.length
+    // nếu user chưa chọn gì → thêm all = 100%
+    const totalSelected = myProfile.selectedOptions.length
 
-  const withAll = [
-    {
-      id: "all",
-      label: "Tất cả",
-      icon: "🌍",
-      interestScore: totalSelected === 0 ? 1 : 0,
-      interestPercent: totalSelected === 0 ? 1 : 0,
-    },
-    ...scored,
-  ]
+    const withAll = [
+      {
+        id: "all",
+        label: "Tất cả",
+        icon: "🌍",
+        interestScore: totalSelected === 0 ? 1 : 0,
+        interestPercent: totalSelected === 0 ? 1 : 0,
+      },
+      ...scored,
+    ]
 
-  return sortCategoriesByInterest(withAll)
-}, [myProfile.selectedOptions])
+    return sortCategoriesByInterest(withAll)
+  }, [myProfile.selectedOptions])
 
   return {
     viewMode,
@@ -382,6 +412,6 @@ const sortedCategories = useMemo(() => {
     activeFilter, setActiveFilter, filteredUsers,
     handleCreateEvent, isEventModalOpen, setIsEventModalOpen,
     selectedEvent, setSelectedEvent, onEventClick,
-    sortedCategories,
+    sortedCategories, mapLocation,
   };
 }
