@@ -346,6 +346,58 @@ const UIOverlay: React.FC<UIOverlayProps> = ({
             >
               Quay lại thực tại
             </button>
+
+            {/* Tính năng Bonus khiêm nhường - Gọn & Responsive */}
+            <div className="mt-16 sm:mt-20 max-w-md mx-auto relative z-[5001] pointer-events-auto px-4">
+              <details className="group appearance-none">
+                <summary className="list-none cursor-pointer outline-none">
+                  <p className="text-[9px] sm:text-[10px] text-slate-600 font-medium tracking-widest leading-relaxed transition-all duration-500 group-open:opacity-20 hover:text-slate-400">
+                    Tính năng này đang được team phát triển mở rộng. Nếu tin tưởng vào tầm nhìn của dự án, bạn có thể
+                    <span className="ml-1 border-b border-slate-800 pb-0.5">tìm hiểu cách ủng hộ team tại đây</span>
+                  </p>
+                </summary>
+
+                <div className="mt-4 animate-in fade-in zoom-in-95 duration-500">
+                  <div
+                    className="inline-flex flex-col items-center sm:items-start bg-white/5 backdrop-blur-xl p-5 sm:p-6 rounded-[2rem] border border-white/10 cursor-pointer active:scale-95 transition-transform"
+                    onClick={(e) => {
+                      navigator.clipboard.writeText("01234567890");
+                      const label = e.currentTarget.querySelector('.status-text') as HTMLElement;
+                      if (label) {
+                        const original = label.innerText;
+                        label.innerText = "ĐÃ SAO CHÉP";
+                        label.classList.add('text-emerald-400');
+                        setTimeout(() => {
+                          label.innerText = original;
+                          label.classList.remove('text-emerald-400');
+                        }, 2000);
+                      }
+                    }}
+                  >
+                    <p className="text-[7px] text-indigo-400 font-black uppercase tracking-[0.4em] mb-2 status-text transition-colors">
+                      Click để sao chép
+                    </p>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-white text-sm sm:text-base font-mono tracking-[0.15em]">
+                        0123 4567 890
+                      </span>
+                      <div className="w-1 h-1 rounded-full bg-slate-700" />
+                      <span className="text-slate-400 text-[9px] font-bold uppercase">VCB</span>
+                    </div>
+
+                    <p className="mt-2 text-[8px] text-slate-500 font-bold uppercase tracking-widest opacity-60">
+                      Cảm ơn bạn rất nhiều <span className="text-rose-500/80">❤️</span>
+                    </p>
+                  </div>
+
+                  {/* Nút đóng cho mobile dễ thao tác */}
+                  <summary className="mt-4 text-[7px] text-slate-700 uppercase font-black tracking-[0.3em] cursor-pointer list-none">
+                    [ Thu gọn ]
+                  </summary>
+                </div>
+              </details>
+            </div>
           </div>
         </div>
       )}
