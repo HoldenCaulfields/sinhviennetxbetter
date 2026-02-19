@@ -57,11 +57,6 @@ const UIOverlay: React.FC<UIOverlayProps> = ({
 
   return (
     <>
-      {/* 1. HIỆU ỨNG LÀM MỜ NỀN KHI CHỈNH SỬA PROFILE */}
-      {viewMode === 'present' && isSelfMode && (
-        <div className="fixed inset-0 z-[2000] bg-white/20 backdrop-blur-[2px] pointer-events-none transition-all duration-700" />
-      )}
-
       {/* 2. BACKGROUND CONNECTIONS: Chỉ hiện trong Present + Self Mode */}
       {viewMode === 'present' && isSelfMode && (
         <div className="z-[2500] relative">

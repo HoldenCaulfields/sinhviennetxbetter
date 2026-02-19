@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
-import { Inter } from 'next/font/google';
 import AuthProvider from "@/lib/AuthProvider";
 
 const inter = Inter({

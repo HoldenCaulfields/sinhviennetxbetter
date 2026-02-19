@@ -47,7 +47,7 @@ export const CATEGORIES: Category[] = [
     id: 'travel',
     label: 'Du lịch',
     group: 'fun',
-    icon: '🌴',
+    icon: '✈️',
     color: '#F0ABFC', 
     subOptions: [
       { id: 't1', label: 'Phượt' }, { id: 't2', label: 'Tham Quan' }, { id: 't3', label: 'Camping' }, { id: 't4', label: 'Đi biển' }

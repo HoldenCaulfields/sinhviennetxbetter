@@ -193,7 +193,7 @@ const PersonaDetailModal: React.FC<PersonaDetailModalProps> = ({ user, myScore, 
         {/* Footer Actions */}
         <div className="p-6 sm:p-8 bg-white border-t border-slate-50 flex gap-3 shrink-0 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
           <button className="flex-[2] py-4 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 active:scale-95 transition-all shadow-xl shadow-slate-200">
-            <Share2 size={18} /> Chia sẻ Vibe
+            <Share2 size={18} /> Share
           </button>
           {!isMe && (
             <button className="flex-1 py-4 bg-white border-2 border-slate-200 text-slate-900 rounded-2xl flex items-center justify-center active:scale-95 transition-all">
