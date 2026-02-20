@@ -358,7 +358,7 @@ const UIOverlay: React.FC<UIOverlayProps> = ({
                   <div
                     className="inline-flex flex-col items-center sm:items-start bg-white/5 backdrop-blur-xl p-5 sm:p-6 rounded-[2rem] border border-white/10 cursor-pointer active:scale-95 transition-transform"
                     onClick={(e) => {
-                      navigator.clipboard.writeText("01234567890");
+                      navigator.clipboard.writeText("0381000602207");
                       const label = e.currentTarget.querySelector('.status-text') as HTMLElement;
                       if (label) {
                         const original = label.innerText;
@@ -377,14 +377,14 @@ const UIOverlay: React.FC<UIOverlayProps> = ({
 
                     <div className="flex items-center gap-2">
                       <span className="text-white text-sm sm:text-base font-mono tracking-[0.15em]">
-                        0123 4567 890
+                        0381 0006 02207
                       </span>
                       <div className="w-1 h-1 rounded-full bg-slate-700" />
                       <span className="text-slate-400 text-[9px] font-bold uppercase">VCB</span>
                     </div>
 
                     <p className="mt-2 text-[8px] text-slate-500 font-bold uppercase tracking-widest opacity-60">
-                      Cảm ơn bạn rất nhiều <span className="text-rose-500/80">❤️</span>
+                      Cảm ơn rất nhiều <span className="text-rose-500/80">❤️</span>
                     </p>
                   </div>
 
